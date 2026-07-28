@@ -1,0 +1,107 @@
+# Auto-generated base by vendoring/vendor.py — Deco156Simple (osman) MiSTer core file list.
+# Edit by hand to add/remove modules; vendor.py only refreshes CONTENT.
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/emu.sv
+# rtl/crt_adjust.sv: core-side "CRT Adjust" (H-Size / H-Position / V-Shift).
+# No sys_top.v edit required (framework off-limits) - inserted in emu.sv on the
+# analog video path before arcade_video. See MiSTer-CRT-Adjust for the module.
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/crt_adjust.sv
+# rtl/analog_hsize.sv is intentionally NOT built: it needs a sys_top.v edit
+# (framework off-limits). Superseded by crt_adjust.sv; kept in-tree for reference.
+
+# ---- deco156simple (osman core + amber ARM + shared cninja video) ----
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtosman_game_sdram.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtosman_game.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtosman_main.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtosman_snd.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtosman_video.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtosman_colmix.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtosman_deco156.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtosman_gfxdec.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtframe_deco16.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/jtframe_decospr.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_core.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_decode.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_execute.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_fetch.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_cache.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_coprocessor.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_register_bank.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_ram_register_bank.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_alu.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_barrel_shift.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_barrel_shift_fpga.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_multiply.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/a23_wishbone.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/sram_byte_en.v
+set_global_assignment -name VERILOG_FILE       rtl/deco156simple/amber/sram_line_en.v
+
+# ---- jteeprom (93C46) ----
+set_global_assignment -name VERILOG_FILE       rtl/jteeprom/jt9346.v
+set_global_assignment -name VERILOG_FILE       rtl/jteeprom/jt9346_16b8b.v
+
+# ---- jt6295 (OKI M6295) ----
+set_global_assignment -name VERILOG_FILE       rtl/jt6295/jt6295.v
+set_global_assignment -name VERILOG_FILE       rtl/jt6295/jt6295_acc.v
+set_global_assignment -name VERILOG_FILE       rtl/jt6295/jt6295_adpcm.v
+set_global_assignment -name VERILOG_FILE       rtl/jt6295/jt6295_ctrl.v
+set_global_assignment -name VERILOG_FILE       rtl/jt6295/jt6295_rom.v
+set_global_assignment -name VERILOG_FILE       rtl/jt6295/jt6295_serial.v
+set_global_assignment -name VERILOG_FILE       rtl/jt6295/jt6295_sh_rst.v
+set_global_assignment -name VERILOG_FILE       rtl/jt6295/jt6295_timing.v
+
+# ---- jtframe framework ----
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/clocking/jtframe_frac_cen.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/clocking/jtframe_freqinfo.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/clocking/jtframe_gated_cen.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/clocking/jtframe_pxlcen.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/jtframe_bcd_cnt.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/jtframe_board_sdram.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/jtframe_rsthold.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/jtframe_sh.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/ram/jtframe_bram_dma.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/ram/jtframe_dual_ram.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/ram/jtframe_dual_ram16.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/ram/jtframe_obj_buffer.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/ram/jtframe_prom.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/ram/jtframe_ram.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/ram/jtframe_rpwp_ram.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_dwnld.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_headerbyte.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_ioctl_range.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_ramslot_ctrl.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_rom_1slot.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_rom_2slots.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_rom_3slots.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_rom_4slots.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_romrq.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_romrq_bcache.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_romrq_xscache.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_sdram64.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_sdram64_bank.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_sdram64_init.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_sdram64_latch.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_sdram64_rfsh.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sdram/jtframe_ucache.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sound/jtframe_dcrm.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sound/jtframe_fir.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sound/jtframe_fir_mono.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sound/jtframe_limmul.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sound/jtframe_limsum.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sound/jtframe_pole.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sound/jtframe_rcmix.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sound/jtframe_sndchain.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/sound/jtframe_st2mono.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/video/jtframe_blank.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/video/jtframe_resync.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/video/jtframe_linebuf.v
+set_global_assignment -name VERILOG_FILE       rtl/jtframe/video/jtframe_vtimer.v
+
+# ---- pll ----
+set_global_assignment -name VERILOG_FILE       rtl/pll/pll_0002.v
+
+# ---- include search paths ----
+set_global_assignment -name SEARCH_PATH rtl/deco156simple
+set_global_assignment -name SEARCH_PATH rtl/jtframe/inc
+set_global_assignment -name SEARCH_PATH rtl/jtframe
+set_global_assignment -name SEARCH_PATH rtl/jt6295
+set_global_assignment -name SEARCH_PATH rtl/jteeprom
