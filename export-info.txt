@@ -1,0 +1,10 @@
+core=osman
+project=Arcade-Deco156Simple
+template_commit=9c8eadb40067c8ce3aef90899844f62d688ac73a
+input_project=mister/cores/osman/seed/mister/0/build/jtosman.qpf
+validation=dependency-paths-only; Quartus elaboration and timing required
+omissions=Missing Template non-synthesis IP metadata: pll_hdmi.cmp; Missing Template non-synthesis IP metadata: pll_audio.cmp
+adaptations=Added 5 unused LFB input declarations to the emu wrapper; game HDL unchanged.; Adapted rtl/emu.sv HPS_BUS width from 49 to 46; no removed bits referenced.; Adapted rtl/jtframe/mister/hdl/jtframe_mister.sv HPS_BUS width from 49 to 46; no removed bits referenced.; Removed JTFRAME-only HPS joy_raw extension; stock Template has no DB15 raw-read command.; Embedded the captured 1024-byte cfgstr.hex into stock hps_io CONF_STR/BRAM; OSD bytes preserved.
+supplemental_assets=fir_192k_4k.hex,font0.hex,jt6295_up4.hex,jt6295_up4_soft.hex
+deduplicated_assets=rtl/osman/deco56_address.hex,rtl/osman/deco56_xor.hex,rtl/osman/deco56_swap.hex; canonical copies at project root
+source_list=Arcade-Deco156Simple.qip

@@ -1,0 +1,15 @@
+font0.hex is JTFRAME's shared font, supplemental to older action archives
+that omitted jtcore's linked data files. Captured artifact files take priority.
+Source: jotego/jtcores, modules/jtframe/bin/font0.hex
+Last source change: 6a1ec73e261cdaef7c97147e7b581702973e5afd (2023-07-03)
+The cached copy matches that Git object's SHA-256 exactly.
+
+microrom.mem and nanorom.mem come from MiSTer-devel/Arcade-Deco16_Mister
+commit ccc91d56315cd0a785a2c689e98cdbb87d576b87, rtl/fx68k/.
+These are only supplemented when the captured fx68k.sv is byte-identical to
+that reference's fx68k.sv. A mismatch requires matching ROM data from the
+original source checkout; the converter refuses to guess.
+
+fir_192k_4k.hex and jt6295_up4*.hex are also from the pinned Deco16 reference.
+Each supplement is gated by byte-identical renderer/decoder HDL, as listed
+in anchors.tsv. Artifact data always takes priority over these supplements.

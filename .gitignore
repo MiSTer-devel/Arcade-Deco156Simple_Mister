@@ -1,1 +1,9 @@
+.DS_Store
 output/
+output_files/
+db/
+incremental_db/
+*.qws
+quartus_build.log
+validation-quartus.log
+.validation.*/
