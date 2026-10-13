@@ -1,2 +1,4 @@
 quartus_elaboration=passed
 quartus_image=theypsilon/quartus-lite-c5:17.0.2.docker0
+quartus_elaboration=passed
+quartus_image=theypsilon/quartus-lite-c5:17.0.2.docker0

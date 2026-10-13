@@ -212,14 +212,14 @@ cores/osman/hdl/amber/a23_coprocessor.v	rtl/osman/amber/a23_coprocessor.v
 cores/osman/hdl/amber/a23_core.v	rtl/osman/amber/a23_core.v
 cores/osman/hdl/amber/a23_decode.v	rtl/osman/amber/a23_decode.v
 cores/osman/hdl/amber/a23_decompile.v	rtl/osman/amber/a23_decompile.v
-cores/osman/hdl/amber/a23_execute.v	rtl/osman/amber/a23_execute.v
-cores/osman/hdl/amber/a23_fetch.v	rtl/osman/amber/a23_fetch.v
+cores/osman/hdl/amber/a23_execute.v	provenance/amber-before/a23_execute.v
+cores/osman/hdl/amber/a23_fetch.v	provenance/amber-before/a23_fetch.v
 cores/osman/hdl/amber/a23_functions.v	rtl/osman/amber/a23_functions.v
 cores/osman/hdl/amber/a23_localparams.v	rtl/osman/amber/a23_localparams.v
 cores/osman/hdl/amber/a23_multiply.v	rtl/osman/amber/a23_multiply.v
 cores/osman/hdl/amber/a23_ram_register_bank.v	rtl/osman/amber/a23_ram_register_bank.v
 cores/osman/hdl/amber/a23_register_bank.v	rtl/osman/amber/a23_register_bank.v
-cores/osman/hdl/amber/a23_wishbone.v	rtl/osman/amber/a23_wishbone.v
+cores/osman/hdl/amber/a23_wishbone.v	provenance/amber-before/a23_wishbone.v
 cores/osman/hdl/amber/debug_functions.v	rtl/osman/amber/debug_functions.v
 cores/osman/hdl/amber/memory_configuration.v	rtl/osman/amber/memory_configuration.v
 cores/osman/hdl/amber/sram_byte_en.v	rtl/osman/amber/sram_byte_en.v
