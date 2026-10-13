@@ -62,16 +62,33 @@
     // or for full line dump.
     // The memory holding the frame buffer depends on the target FPGA platform
 `ifdef JTFRAME_LF_BUFFER
-    output   [ 7:0] game_vrender,
-    output   [ 8:0] game_hdump,
-    output   [ 8:0] ln_addr,
+    output   [`JTFRAME_LF_VW-1:0] game_vrender,
+    output   [`JTFRAME_LF_HW-1:0] game_hdump,
+    output   [`JTFRAME_LF_HW-1:0] ln_addr,
     output   [15:0] ln_data,
     output          ln_done,
     output          ln_we,
+    output          fb_keep,
     input           ln_hs, ln_vs, ln_lvbl,
     input    [15:0] ln_dout,
     input    [15:0] ln_pxl,
-    input    [ 7:0] ln_v,
+    input    [`JTFRAME_LF_VW-1:0] ln_v,
+`endif
+`ifdef JTFRAME_MR_GAME_DDR
+    // DDR3 for the game logic (MiSTer only), on clk
+    output   [ 7:0] ddr_burstcnt,
+    output   [28:0] ddr_addr,
+    output          ddr_rd,
+    output          ddr_we,
+    output   [ 7:0] ddr_be,
+    output   [63:0] ddr_din,
+    input           ddr_busy,
+    input    [63:0] ddr_dout,
+    input           ddr_dout_ready,
+`endif
+`ifdef JTFRAME_LF_ZOOM
+    output   [ 8:0] h_step,
+    output   [ 8:0] v_step,
 `endif
 `ifdef JTFRAME_SAVEGAME
     output            sav_change,

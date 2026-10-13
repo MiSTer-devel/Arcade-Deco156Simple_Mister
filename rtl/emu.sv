@@ -1,551 +1,732 @@
 //============================================================================
-//  Arcade: Data East DECO 16-bit (Osman / Cannon Dancer (Data East Simple 156))
+//  JTFRAME by Jose Tejada Gomez. Twitter: @topapate
 //
-//  MiSTer-devel `emu` wrapper around the JOTEGO jtframe `osman` (Simple-156) core.
-//  Clean rebuild on a pristine Template_MiSTer, vendoring inspired by the
-//  working Arcade-Deco16_MisterDevel (cninja) core. Hosts jtframe's GENERATED game
-//  wrapper (jtosman_game_sdram) + jtframe's SDRAM glue (jtframe_board_sdram),
-//  with pixel cens from jtframe_pxlcen and SDRAM_CLK = clk48sh (jtframe's
-//  exact, proven config for this core).
+//  Port to MiSTer
+//  Thanks to Sorgelig for his continuous support
+//  Original repository: http://github.com/jotego/jt_gng
 //
-//  GPLv3 — see rtl/deco156simple/jtosman_game.v header.
+//  This program is free software; you can redistribute it and/or modify it
+//  under the terms of the GNU General Public License as published by the Free
+//  Software Foundation; either version 2 of the License, or (at your option)
+//  any later version.
+//
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+//  more details.
+//
+//  You should have received a copy of the GNU General Public License along
+//  with this program; if not, write to the Free Software Foundation, Inc.,
+//  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //============================================================================
+
+`ifdef JTFRAME_VERTICAL
+`define JTFRAME_MR_DDR
+`endif
+
+`ifdef JTFRAME_LF_BUFFER
+`define JTFRAME_MR_DDR
+`endif
+
+`ifdef JTFRAME_MR_DDRLOAD
+`define JTFRAME_MR_DDR
+`endif
+
+`ifdef JTFRAME_MR_GAME_DDR
+`define JTFRAME_MR_DDR
+`endif
 
 module emu
 (
-	`include "sys/emu_ports.vh"
+    // Template_MiSTer linear-framebuffer inputs; unused by the original wrapper.
+input   [5:0] LFB_FMT,
+input  [31:0] LFB_BASE,
+input  [11:0] LFB_WIDTH,
+input  [11:0] LFB_HEIGHT,
+input  [13:0] LFB_STRIDE,
+
+    //Master input clock
+    input         CLK_50M,
+
+    //Async reset from top-level module.
+    //Can be used as initial reset.
+    input         RESET,
+
+    //Must be passed to hps_io module
+    inout [45:0] HPS_BUS,
+
+    //Base video clock. Usually equals to CLK_SYS.
+    output        CLK_VIDEO,
+
+    //Multiple resolutions are supported using different CE_PIXEL rates.
+    //Must be based on CLK_VIDEO
+    output        CE_PIXEL,
+
+    output  [7:0] VGA_R,
+    output  [7:0] VGA_G,
+    output  [7:0] VGA_B,
+    output        VGA_HS,
+    output        VGA_VS,
+    output        VGA_DE,    // = ~(VBlank | HBlank)
+    output        VGA_F1,
+    output  [1:0] VGA_SL,
+    output        VGA_SCALER,
+    output        VGA_DISABLE, // analog out is off
+
+    input  [11:0] HDMI_WIDTH,
+    input  [11:0] HDMI_HEIGHT,
+    output        HDMI_FREEZE,
+    output        HDMI_BLACKOUT,
+    output        HDMI_BOB_DEINT,
+
+    //Video aspect ratio for HDMI. Most retro systems have ratio 4:3.
+    output [12:0] VIDEO_ARX,
+    output [12:0] VIDEO_ARY,
+
+    output        LED_USER,  // 1 - ON, 0 - OFF.
+
+    // b[1]: 0 - LED status is system status OR'd with b[0]
+    //       1 - LED status is controled solely by b[0]
+    // hint: supply 2'b00 to let the system control the LED.
+    output  [1:0] LED_POWER,
+    output  [1:0] LED_DISK,
+
+    // I/O board button press simulation (active high)
+    // b[1]: user button
+    // b[0]: osd button
+    output  [1:0] BUTTONS,
+
+    input         CLK_AUDIO,
+    output reg [15:0] AUDIO_L,
+    output reg [15:0] AUDIO_R,
+    output        AUDIO_S,   // 1 - signed audio samples, 0 - unsigned
+    output  [1:0] AUDIO_MIX, // 0 - no mix, 1 - 25%, 2 - 50%, 3 - 100% (mono)
+
+    //ADC
+    inout   [3:0] ADC_BUS,
+
+    //SD-SPI
+    output        SD_SCK,
+    output        SD_MOSI,
+    input         SD_MISO,
+    output        SD_CS,
+    input         SD_CD,
+
+    //SDRAM interface with lower latency
+    output        SDRAM_CLK,
+    output        SDRAM_CKE,
+    output [12:0] SDRAM_A,
+    output [ 1:0] SDRAM_BA,
+    inout  [15:0] SDRAM_DQ,
+    output        SDRAM_DQML,
+    output        SDRAM_DQMH,
+    output        SDRAM_nCS,
+    output        SDRAM_nCAS,
+    output        SDRAM_nRAS,
+    output        SDRAM_nWE,
+
+    input         UART_CTS,
+    output        UART_RTS,
+    input         UART_RXD,
+    output        UART_TXD,
+    output        UART_DTR,
+    input         UART_DSR,
+
+    `ifdef JTFRAME_VERTICAL
+    output        FB_EN,
+    output [ 4:0] FB_FORMAT,
+    output [11:0] FB_WIDTH,
+    output [11:0] FB_HEIGHT,
+    output [31:0] FB_BASE,
+    output [13:0] FB_STRIDE,
+    input         FB_VBL,
+    input         FB_LL,
+    output        FB_FORCE_BLANK,
+
+    // Palette control for 8bit modes.
+    // Ignored for other video modes.
+    output        FB_PAL_CLK,
+    output [ 7:0] FB_PAL_ADDR,
+    output [23:0] FB_PAL_DOUT,
+    input  [23:0] FB_PAL_DIN,
+    output        FB_PAL_WR,
+`endif
+
+    output        DDRAM_CLK,
+    input         DDRAM_BUSY,
+    output [ 7:0] DDRAM_BURSTCNT,
+    output [28:0] DDRAM_ADDR,
+    input  [63:0] DDRAM_DOUT,
+    input         DDRAM_DOUT_READY,
+    output        DDRAM_RD,
+    output [63:0] DDRAM_DIN,
+    output [ 7:0] DDRAM_BE,
+    output        DDRAM_WE,
+
+    // Open-drain User port.
+    // 0 - D+/RX
+    // 1 - D-/TX
+    // 2..6 - USR2..USR6
+    // Set USER_OUT to 1 to read from USER_IN.
+    input   [6:0] USER_IN,
+    output  [6:0] USER_OUT,
+    output        db15_en,
+    output        uart_en,
+    output        gun_border_en,
+    output        show_osd,
+    input         OSD_STATUS
+    `ifdef SIMULATION
+    ,output       sim_pxl_cen,
+    output        sim_pxl_clk,
+    output        sim_vb,
+    output        sim_hb
+    `endif
 );
 
-///////// Default values for ports not used in this core /////////
-assign ADC_BUS  = 'Z;
-assign USER_OUT = '1;
-assign {UART_RTS, UART_TXD, UART_DTR} = 0;
+`ifdef JTFRAME_SDRAM_XL
+    localparam SDRAMW=24; // 128 MB
+`elsif JTFRAME_SDRAM_LARGE
+    localparam SDRAMW=23; // 64 MB
+`else
+    localparam SDRAMW=22; // 32 MB
+`endif
+
+`ifndef JTFRAME_INTERLACED
+assign VGA_F1=1'b0;
+`else
+wire   field;
+assign VGA_F1=field;
+`endif
+
+// unused features
+assign VGA_SCALER    = 0;
+assign VGA_DISABLE   = 0;
+assign HDMI_FREEZE   = 0;
+assign HDMI_BLACKOUT = 0;
+assign HDMI_BOB_DEINT= 0;
+assign AUDIO_MIX     = 0;
+assign BUTTONS       = 0;
 assign {SD_SCK, SD_MOSI, SD_CS} = 'Z;
-// DDRAM is driven by u_rotate (screen_rotate) for the vertical framebuffer.
+assign {UART_RTS, UART_TXD, UART_DTR} = 0;
 
-assign VGA_F1       = 0;
-assign VGA_SCALER   = 0;
-assign VGA_DISABLE  = 0;
-assign HDMI_FREEZE  = 0;
-assign HDMI_BLACKOUT  = 0;
-assign HDMI_BOB_DEINT = 0;
+wire [3:0] hoffset, voffset;
+wire [1:0] dial_x, dial_y;
 
-assign AUDIO_MIX = 2'd0;   // core output is mono (L==R)
+////////////////////   CLOCKS   ///////////////////
 
-assign LED_DISK  = 0;
-assign LED_POWER = 0;
-assign BUTTONS   = 0;
-
-wire [1:0] ar = status[14:13];
-assign VIDEO_ARX = (!ar) ? (no_rotate ? 12'd4 : 12'd3) : (ar - 1'd1);
-assign VIDEO_ARY = (!ar) ? (no_rotate ? 12'd3 : 12'd4) : 12'd0;
-
-//////////////////////////////   CONF_STR   //////////////////////////////////
-`include "build_id.v"
-localparam CONF_STR = {
-	"Arcade-Deco156Simple;;",
-	"-;",
-	"P1,Video Settings;",
-	"P1O[14:13],Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
-	"P1O[5:3],Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
-	"P1-;",
-	"P1O[32],CRT Adjust,Off,On;",
-	"H1P1O[37:33],CRT H-Size,0,+1,+2,+3,+4,+5,+6,+7,+8,+9,+10,+11,+12,+13,+14,+15,-16,-15,-14,-13,-12,-11,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1;",
-	"H1P1O[42:38],CRT H-Position,0,+1,+2,+3,+4,+5,+6,+7,+8,+9,+10,+11,+12,+13,+14,+15,-16,-15,-14,-13,-12,-11,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1;",
-	"H1P1O[47:43],CRT V-Shift,0,+1,+2,+3,+4,+5,+6,+7,+8,+9,+10,+11,+12,+13,+14,+15,-16,-15,-14,-13,-12,-11,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1;",
-	"-;",
-	"DIP;",
-	"-;",
-	"T[0],Reset;",
-	"R[0],Reset and close OSD;",
-	"J1,Attack,Jump,Special,Start,Coin,Pause;",
-	"jn,A,B,X,Start,Select,R;",
-	"V,v",`BUILD_DATE
-};
-
-//////////////////////////////   CLOCKS   ////////////////////////////////////
-// jtframe game PLL (vendored sys/pll): clk48 / clk48sh / clk24 / clk96.
-wire clk48, clk48sh, clk24, clk96, clk96sh;
+wire clk_sys, clk_rom, clk96, clk96sh, clk48, clk48sh, clk24;
+wire game_rst, game_service, game_tilt, rst, rst_n;
+wire clk_pico;
+wire pxl2_cen, pxl_cen;
+wire rst96, rst48, rst24;
 wire pll_locked;
+reg  pll_rst = 1'b0;
+wire sys_rst;
+`ifdef JTFRAME_PLL_TUNE
+wire [63:0] pll_reconfig_to, pll_reconfig_from;
+wire        pll_cfg_waitrequest, pll_cfg_write, pll_tune_hold;
+wire [ 5:0] pll_cfg_address;
+wire [31:0] pll_cfg_writedata;
+`endif
 
-pll pll
-(
-	.refclk   ( CLK_50M    ),
-	.rst      ( 1'b0       ),
-	.locked   ( pll_locked ),
-	.outclk_0 ( clk48      ),
-	.outclk_1 ( clk48sh    ),
-	.outclk_2 ( clk24      ),
-	.outclk_3 (            ),
-	.outclk_4 ( clk96      ),
-	.outclk_5 ( clk96sh    )
+// Resets the PLL if it looses lock
+jtframe_sync u_sync(
+    .clk_in     ( CLK_50M   ),
+    .clk_out    ( clk_sys   ),
+    .raw        ( RESET     ),
+    .sync       ( sys_rst   )
 );
 
-wire clk_sys = clk48;       // clk_sys == clk_rom == SDRAM clock domain
+`ifndef JTFRAME_PLL_TUNE
+always @(posedge clk_sys or posedge sys_rst) begin : pll_controller
+    reg last_locked;
+    reg [7:0] rst_cnt;
 
-// SDRAM_CLK: jtframe's exact config for osman (180SHIFT=0) — the PLL's
-// phase-shifted 48 MHz output drives the SDRAM clock pin directly. Constrained
-// as a generated clock in jtframe_sdram.sdc.
-assign SDRAM_CLK = clk48sh;
-
-//////////////////////////////   HPS IO   ////////////////////////////////////
-wire [127:0] status;
-wire   [1:0] buttons;
-wire         forced_scandoubler;
-wire         direct_video;
-wire  [21:0] gamma_bus;
-wire  [10:0] ps2_key;
-
-wire  [31:0] joystick_0, joystick_1, joystick_2, joystick_3;
-
-wire         ioctl_download;
-wire         ioctl_wr;
-wire  [26:0] ioctl_addr;
-wire   [7:0] ioctl_dout;
-wire  [15:0] ioctl_index;
-wire         ioctl_wait;
-
-hps_io #(.CONF_STR(CONF_STR)) hps_io
-(
-	.clk_sys            ( clk_sys            ),
-	.HPS_BUS            ( HPS_BUS            ),
-	.EXT_BUS            (                    ),
-
-	.buttons            ( buttons            ),
-	.status             ( status             ),
-	.status_menumask    ( {14'd0, ~status[32], 1'b0} ),  // H1: hide CRT amounts unless On
-	.forced_scandoubler ( forced_scandoubler ),
-	.direct_video       ( direct_video       ),
-	.gamma_bus          ( gamma_bus          ),
-
-	.joystick_0         ( joystick_0         ),
-	.joystick_1         ( joystick_1         ),
-	.joystick_2         ( joystick_2         ),
-	.joystick_3         ( joystick_3         ),
-
-	.ioctl_download     ( ioctl_download     ),
-	.ioctl_wr           ( ioctl_wr           ),
-	.ioctl_addr         ( ioctl_addr         ),
-	.ioctl_dout         ( ioctl_dout         ),
-	.ioctl_index        ( ioctl_index        ),
-	.ioctl_wait         ( ioctl_wait         ),
-
-	.ps2_key            ( ps2_key            )
-);
-
-//////////////////////////////   RESET   /////////////////////////////////////
-wire sdram_init;                       // from board_sdram (high while SDRAM trains)
-wire dwnld_busy;                       // from game_sdram (ROM download in progress)
-
-// SDRAM controller reset: hard reset / PLL-loss ONLY. It must run its init
-// sequence and service the ROM download, so it must NOT be gated on sdram_init
-// (its own output -> deadlock) or dwnld_busy.
-wire rst_sd;
-sync_rst u_rst_sd(.clk(clk48), .arst(RESET | ~pll_locked), .rst(rst_sd));
-
-// Game reset: also held through SDRAM init, the ROM download and soft reset.
-wire core_reset = RESET | status[0] | buttons[1] | ~pll_locked | sdram_init | dwnld_busy;
-wire rst48, rst24, rst96;
-sync_rst u_rst48(.clk(clk48), .arst(core_reset), .rst(rst48));
-sync_rst u_rst24(.clk(clk24), .arst(core_reset), .rst(rst24));
-sync_rst u_rst96(.clk(clk96), .arst(core_reset), .rst(rst96));
-
-//////////////////////////////   DOWNLOAD   //////////////////////////////////
-// MRA index 0 -> main ROM stream into the jtframe download path.
-// DIPs arrive on index 254 (4 bytes).
-wire        ioctl_rom = ioctl_download & (ioctl_index[15:0]==16'd0);
-
-// osman is a single game with NO MRA header (JTFRAME_HEADER unset) and is always
-// horizontal (ROT0) — no game_id, no rotation. (cninja used header byte 0 to pick
-// between its 4 games and rotate the vertical one.)
-reg  [7:0]  dsw[0:3];
-always @(posedge clk48) begin
-	if (ioctl_wr && ioctl_index[15:0]==16'd254 && !ioctl_addr[24:2])
-		dsw[ioctl_addr[1:0]] <= ioctl_dout;
+    if( sys_rst ) begin
+        pll_rst <= 1'b0;
+        rst_cnt <= 8'hd0;
+    end else begin
+        last_locked <= pll_locked;
+        if( last_locked && !pll_locked ) begin
+            rst_cnt <= 8'hff; // keep reset high for 256 cycles
+            pll_rst <= 1'b1;
+        end else begin
+            if( rst_cnt != 8'h00 )
+                rst_cnt <= rst_cnt - 8'h1;
+            else
+                pll_rst <= 1'b0;
+        end
+    end
 end
-wire [31:0] dipsw = {dsw[3], dsw[2], dsw[1], dsw[0]};
+`endif
 
-// Throttle the HPS while an SDRAM prog write is outstanding. prog_we is held
-// from byte-latch until sdram_ack, and is 0 for BRAM(prom)/non-SDRAM bytes.
-wire prog_we, prog_ack;
-assign ioctl_wait = prog_we;
+// There are many false paths defined in the
+// SDC file between this PLL and the ones
+// used in sys_top
+pll pll(
+    .refclk     ( CLK_50M    ),
+    .rst        ( pll_rst    ),
+    .locked     ( pll_locked ),
+    .outclk_0   ( clk48      ),
+    .outclk_1   ( clk48sh    ),
+    .outclk_2   ( clk24      ),
+    .outclk_3   (            ),
+    .outclk_4   ( clk96      ),
+    .outclk_5   ( clk96sh    )
+`ifdef JTFRAME_PLL_TUNE
+   ,.reconfig_to_pll   ( pll_reconfig_to   ),
+    .reconfig_from_pll ( pll_reconfig_from )
+`endif
+);
 
-//////////////////////////////   INPUTS   ////////////////////////////////////
-// jtframe cabinet inputs are ACTIVE-LOW (idle=1). MiSTer joystick bits are
-// active-high; invert. osman has 3 buttons: bit4=B1 bit5=B2 bit6=B3, bit7=Start
-// bit8=Coin bit9=Pause. jtframe joystick: [6:4]={B3,B2,B1}, [3:0] dir nibble with
-// JTFRAME_JOY_RLDU => {R,L,D,U} = {in[0],in[1],in[2],in[3]}.
-function [6:0] jtjoy(input [31:0] m);
-	jtjoy = ~{ m[6], m[5], m[4], m[0], m[1], m[2], m[3] };
-endfunction
+jtframe_rst_sync u_reset96(
+    .rst        ( game_rst  ),
+    .clk        ( clk96     ),
+    .rst_sync   ( rst96     )
+);
 
-wire [6:0] joystick1 = jtjoy(joystick_0);
-wire [6:0] joystick2 = jtjoy(joystick_1);
-wire [6:0] joystick3 = jtjoy(joystick_2);
-wire [6:0] joystick4 = jtjoy(joystick_3);
+jtframe_rst_sync u_reset48(
+    .rst        ( game_rst  ),
+    .clk        ( clk48     ),
+    .rst_sync   ( rst48     )
+);
 
-wire [3:0] cab_1p = ~{ joystick_3[7], joystick_2[7], joystick_1[7], joystick_0[7] };
-wire [3:0] coin   = ~{ joystick_3[8], joystick_2[8], joystick_1[8], joystick_0[8] };
-wire       game_pause = joystick_0[9] | joystick_1[9];
+jtframe_rst_sync u_reset24(
+    .rst        ( game_rst  ),
+    .clk        ( clk24     ),
+    .rst_sync   ( rst24     )
+);
 
-//////////////////////////////   GAME CORE   /////////////////////////////////
-wire [7:0] red, green, blue;
-wire       LHBL, LVBL, HS, VS;        // jtframe blanks are ACTIVE-LOW
-wire       pxl_cen, pxl2_cen;
-wire       dip_flip;
+`ifdef JTFRAME_SDRAM96
+    assign clk_rom = clk96;
+    assign clk_sys = clk96;
+`else
+    assign clk_rom = clk48;
+    assign clk_sys = clk48;
+`endif
 
-wire signed [15:0] snd;
-wire         [5:0] snd_vu;
-wire               snd_peak, sample;
+assign clk_pico = clk48;
 
-// Board-facing SDRAM bus (muxed between the game and the debug dump engine).
-wire [21:0] ba0_addr, ba1_addr, ba2_addr, ba3_addr;
-wire  [3:0] ba_rd, ba_wr;
-wire  [3:0] ba_dst, ba_dok, ba_rdy, ba_ack;
-// Game-side SDRAM bus (before the debug mux).
-wire [21:0] g_ba0_addr, g_ba1_addr, g_ba2_addr, g_ba3_addr;
-wire  [3:0] g_ba_rd, g_ba_wr;
+generate
+    if( `JTFRAME_180SHIFT == 0 ) begin
+        `ifdef JTFRAME_SDRAM96
+        assign SDRAM_CLK   = clk96sh;
+        `else
+        assign SDRAM_CLK   = clk48sh;
+        `endif
+    end else begin
+        altddio_out
+        #(
+            .extend_oe_disable("OFF"),
+            .intended_device_family("Cyclone V"),
+            .invert_output("OFF"),
+            .lpm_hint("UNUSED"),
+            .lpm_type("altddio_out"),
+            .oe_reg("UNREGISTERED"),
+            .power_up_high("OFF"),
+            .width(1)
+        )
+        sdramclk_ddr
+        (
+            .datain_h(1'b0),
+            .datain_l(1'b1),
+            .outclock(clk_rom),
+            .dataout(SDRAM_CLK),
+            .aclr(1'b0),
+            .aset(1'b0),
+            .oe(1'b1),
+            .outclocken(1'b1),
+            .sclr(1'b0),
+            .sset(1'b0)
+        );
+    end
+endgenerate
+
+///////////////////////////////////////////////////
+
+wire [63:0] status;
+wire [ 1:0] buttons;
+
+`ifdef JTFRAME_PLL_TUNE
+pll_cfg_hdmi pll_game_cfg(
+    .mgmt_clk        ( CLK_50M            ),
+    .mgmt_reset      ( RESET              ),
+    .mgmt_waitrequest( pll_cfg_waitrequest ),
+    .mgmt_write      ( pll_cfg_write       ),
+    .mgmt_address    ( pll_cfg_address     ),
+    .mgmt_writedata  ( pll_cfg_writedata   ),
+    .reconfig_to_pll ( pll_reconfig_to     ),
+    .reconfig_from_pll(pll_reconfig_from   )
+);
+
+jtframe_pll_tune pll_tune(
+    .clk            ( CLK_50M            ),
+    .rst            ( RESET              ),
+    .speed          ( status[15:13]      ),
+    .pll_locked     ( pll_locked          ),
+    .cfg_waitrequest( pll_cfg_waitrequest ),
+    .cfg_write      ( pll_cfg_write       ),
+    .cfg_address    ( pll_cfg_address     ),
+    .cfg_writedata  ( pll_cfg_writedata   ),
+    .hold_reset     ( pll_tune_hold       )
+);
+`endif
+
+wire [ 1:0] dip_fxlevel;
+wire        dip_pause, dip_flip, dip_test;
+wire [31:0] dipsw;
+
+wire        ioctl_wr;
+wire [26:0] ioctl_addr; // up to 128MB
+wire [ 7:0] ioctl_dout, ioctl_din;
+
+wire [ 9:0] game_joy1, game_joy2, game_joy3, game_joy4;
+wire [ 3:0] game_coin, game_start;
+wire [ 3:0] gfx_en;
+wire [ 7:0] debug_bus, debug_view;
+wire [15:0] joyana_l1, joyana_l2, joyana_l3, joyana_l4,
+            joyana_r1, joyana_r2, joyana_r3, joyana_r4;
+
+wire        rst_req   = sys_rst | status[0] | buttons[1]
+`ifdef JTFRAME_PLL_TUNE
+                        | pll_tune_hold
+`endif
+                        ;
+wire [15:0] snd_left, snd_right;
+wire [ 5:0] snd_en, snd_vu;
+wire [ 7:0] snd_vol;
+wire        snd_peak;
+
+assign LED_DISK  = 2'b0;
+assign LED_POWER = 2'b0;
+
+// ROM download
+wire          ioctl_rom, ioctl_cart, dwnld_busy;
+
+wire [SDRAMW-1:0] prog_addr;
+wire [15:0]   prog_data;
+wire [ 1:0]   prog_mask, prog_ba;
+wire          prog_we, prog_rd, prog_rdy, prog_ack, prog_dst, prog_dok;
+
+// ROM access from game
+wire [SDRAMW-1:0] ba0_addr, ba1_addr, ba2_addr, ba3_addr;
+wire [ 3:0] ba_rd, ba_rdy, ba_ack, ba_dst, ba_dok, ba_wr;
 wire [15:0] ba0_din, ba1_din, ba2_din, ba3_din;
-wire  [1:0] ba0_dsn, ba1_dsn, ba2_dsn, ba3_dsn;
-wire [15:0] data_read;
-wire [15:0] prog_data;
-wire  [1:0] prog_ba, prog_mask;
-wire [21:0] prog_addr;
-wire        prog_rd, prog_rdy, prog_dst, prog_dok;
+wire [ 1:0] ba0_dsn, ba1_dsn, ba2_dsn, ba3_dsn;
+`ifdef JTFRAME_SDRAM_CACHE
+wire [SDRAMW-1:0] burst_addr;
+wire [ 1:0] burst_ba;
+wire        burst_rd, burst_wr, burst_ack, burst_dst, burst_dok, burst_rdy;
+wire [15:0] burst_din;
+`endif
+wire [15:0] sdram_dout;
 
-jtframe_pxlcen u_pxlcen(
-	.clk      ( clk48    ),
-	.pxl_cen  ( pxl_cen  ),
-	.pxl2_cen ( pxl2_cen )
+wire [ 7:0] st_addr, st_dout;
+wire [ 7:0] paddle_1,  paddle_2,  paddle_3,  paddle_4,
+            spinner_1, spinner_2, spinner_3, spinner_4;
+wire [15:0] mouse_1p, mouse_2p;
+wire [ 1:0] mouse_strobe;
+wire [ 8:0] gun_1p_x, gun_1p_y, gun_2p_x, gun_2p_y;
+
+localparam COLORW=`JTFRAME_COLORW;
+
+wire [COLORW-1:0] red, green, blue;
+wire              LHBL, LVBL;
+wire              hs, vs, sample;
+wire              ioctl_ram;
+wire              game_rx, game_tx;
+
+`ifndef JTFRAME_UART
+    assign game_tx = 1;
+`endif
+
+`ifndef JTFRAME_SIGNED_SND
+assign AUDIO_S = 1'b1; // Assume signed by default
+`else
+assign AUDIO_S = `JTFRAME_SIGNED_SND;
+`endif
+
+// Line-Frame buffer
+wire [`JTFRAME_LF_HW-1:0] game_hdump,   ln_addr;
+wire [`JTFRAME_LF_VW-1:0] game_vrender, ln_v;
+wire        ln_done, ln_hs, ln_vs, ln_lvbl, ln_we, fb_keep;
+wire [15:0] ln_dout, ln_pxl, ln_data;
+
+`ifdef JTFRAME_MR_GAME_DDR
+wire [ 7:0] game_ddr_burstcnt, game_ddr_be;
+wire [28:0] game_ddr_addr;
+wire        game_ddr_rd, game_ddr_we, game_ddr_busy, game_ddr_dout_ready;
+wire [63:0] game_ddr_din, game_ddr_dout;
+`endif
+
+jtframe_mister #(
+    .SDRAMW         ( SDRAMW         ),
+    .BUTTONS        (`JTFRAME_BUTTONS),
+    .COLORW         ( COLORW         ),
+    .VIDEO_WIDTH    (`JTFRAME_WIDTH  ),
+    .VIDEO_HEIGHT   (`JTFRAME_HEIGHT )
+)
+u_frame(
+    .clk_sys        ( clk_sys        ),
+    .clk_rom        ( clk_rom        ),
+    .clk_pico       ( clk_pico       ),
+    .pll_locked     ( pll_locked     ),
+    // interface with microcontroller
+    .status         ( status         ),
+    .HPS_BUS        ( HPS_BUS        ),
+    .buttons        ( buttons        ),
+    // Extension port (fake USB3)
+    .USER_OUT       ( USER_OUT       ),
+    .USER_IN        ( USER_IN        ),
+    .db15_en        ( db15_en        ),
+    .uart_en        ( uart_en        ),
+    .game_rx        ( game_rx        ), // core-specific UART
+    .game_tx        ( game_tx        ),
+    .show_osd       ( show_osd       ),
+    .OSD_STATUS     ( OSD_STATUS     ),
+    // Base video
+    .game_r         ( red            ),
+    .game_g         ( green          ),
+    .game_b         ( blue           ),
+    .LHBL           ( LHBL           ),
+    .LVBL           ( LVBL           ),
+    .hs             ( hs             ),
+    .vs             ( vs             ),
+    .pxl_cen        ( pxl_cen        ),
+    .pxl2_cen       ( pxl2_cen       ),
+
+    // Audio
+    .snd_lin        ( snd_left       ),
+    .snd_rin        ( snd_right      ),
+    .snd_sample     ( sample         ),
+    .snd_rout       ( AUDIO_R        ),
+    .snd_lout       ( AUDIO_L        ),
+    .snd_en         ( snd_en         ),
+    .snd_vu         ( snd_vu         ),
+    .snd_vol        ( snd_vol        ),
+    .snd_peak       ( snd_peak       ),
+    // line-frame buffer
+    .game_vrender   ( game_vrender   ),
+    .game_hdump     ( game_hdump     ),
+    .ln_addr        ( ln_addr        ),
+    .ln_data        ( ln_data        ),
+    .ln_done        ( ln_done        ),
+    .ln_hs          ( ln_hs          ),
+    .ln_dout        ( ln_dout        ),
+    .ln_pxl         ( ln_pxl         ),
+    .ln_v           ( ln_v           ),
+    .ln_vs          ( ln_vs          ),
+    .ln_lvbl        ( ln_lvbl        ),
+    .ln_we          ( ln_we          ),
+    .fb_keep        ( fb_keep        ),
+`ifdef JTFRAME_LF_ZOOM
+    .game_h_step    ( game_h_step    ),
+    .game_v_step    ( game_v_step    ),
+`endif
+`ifdef JTFRAME_MR_GAME_DDR
+    .game_ddr_burstcnt  ( game_ddr_burstcnt   ),
+    .game_ddr_addr      ( game_ddr_addr       ),
+    .game_ddr_rd        ( game_ddr_rd         ),
+    .game_ddr_we        ( game_ddr_we         ),
+    .game_ddr_be        ( game_ddr_be         ),
+    .game_ddr_din       ( game_ddr_din        ),
+    .game_ddr_busy      ( game_ddr_busy       ),
+    .game_ddr_dout      ( game_ddr_dout       ),
+    .game_ddr_dout_ready( game_ddr_dout_ready ),
+`endif
+
+    `ifdef JTFRAME_VERTICAL
+    // Screen rotation
+    .FB_EN          ( FB_EN          ),
+    .FB_FORMAT      ( FB_FORMAT      ),
+    .FB_WIDTH       ( FB_WIDTH       ),
+    .FB_HEIGHT      ( FB_HEIGHT      ),
+    .FB_BASE        ( FB_BASE        ),
+    .FB_STRIDE      ( FB_STRIDE      ),
+    .FB_VBL         ( FB_VBL         ),
+    .FB_LL          ( FB_LL          ),
+    .FB_FORCE_BLANK ( FB_FORCE_BLANK ),
+
+    .FB_PAL_CLK     ( FB_PAL_CLK     ),
+    .FB_PAL_ADDR    ( FB_PAL_ADDR    ),
+    .FB_PAL_DOUT    ( FB_PAL_DOUT    ),
+    .FB_PAL_DIN     ( FB_PAL_DIN     ),
+    .FB_PAL_WR      ( FB_PAL_WR      ),
+    `endif
+
+    // DDR interface
+    .DDRAM_CLK      ( DDRAM_CLK      ), // same as clk_rom
+    .DDRAM_BURSTCNT ( DDRAM_BURSTCNT ),
+    .DDRAM_ADDR     ( DDRAM_ADDR     ),
+    .DDRAM_BE       ( DDRAM_BE       ),
+    .DDRAM_WE       ( DDRAM_WE       ),
+    .DDRAM_BUSY     ( DDRAM_BUSY     ),
+    .DDRAM_DOUT_READY(DDRAM_DOUT_READY ),
+    .DDRAM_DOUT     ( DDRAM_DOUT     ),
+    .DDRAM_RD       ( DDRAM_RD       ),
+    .DDRAM_DIN      ( DDRAM_DIN      ),
+
+    // SDRAM interface
+    .SDRAM_CLK      ( SDRAM_CLK      ),
+    .SDRAM_DQ       ( SDRAM_DQ       ),
+    .SDRAM_A        ( SDRAM_A        ),
+    .SDRAM_DQML     ( SDRAM_DQML     ),
+    .SDRAM_DQMH     ( SDRAM_DQMH     ),
+    .SDRAM_nWE      ( SDRAM_nWE      ),
+    .SDRAM_nCAS     ( SDRAM_nCAS     ),
+    .SDRAM_nRAS     ( SDRAM_nRAS     ),
+    .SDRAM_nCS      ( SDRAM_nCS      ),
+    .SDRAM_BA       ( SDRAM_BA       ),
+    .SDRAM_CKE      ( SDRAM_CKE      ),
+    // ROM access from game
+    .ba0_addr   ( ba0_addr      ),
+    .ba1_addr   ( ba1_addr      ),
+    .ba2_addr   ( ba2_addr      ),
+    .ba3_addr   ( ba3_addr      ),
+`ifdef JTFRAME_SDRAM_CACHE
+    .burst_addr ( burst_addr    ),
+    .burst_ba   ( burst_ba      ),
+    .burst_rd   ( burst_rd      ),
+    .burst_wr   ( burst_wr      ),
+    .burst_ack  ( burst_ack     ),
+    .burst_dst  ( burst_dst     ),
+    .burst_dok  ( burst_dok     ),
+    .burst_rdy  ( burst_rdy     ),
+`endif
+    .ba_rd      ( ba_rd         ),
+    .ba_wr      ( ba_wr         ),
+    .ba_dst     ( ba_dst        ),
+    .ba_dok     ( ba_dok        ),
+    .ba_rdy     ( ba_rdy        ),
+    .ba_ack     ( ba_ack        ),
+    .ba0_din    ( ba0_din       ),
+    .ba0_dsn    ( ba0_dsn       ),
+    .ba1_din    ( ba1_din       ),
+    .ba1_dsn    ( ba1_dsn       ),
+    .ba2_din    ( ba2_din       ),
+    .ba2_dsn    ( ba2_dsn       ),
+    .ba3_din    ( ba3_din       ),
+    .ba3_dsn    ( ba3_dsn       ),
+`ifdef JTFRAME_SDRAM_CACHE
+    .burst_din  ( burst_din     ),
+`endif
+
+    // ROM-load interface
+    .prog_addr  ( prog_addr     ),
+    .prog_ba    ( prog_ba       ),
+    .prog_rd    ( prog_rd       ),
+    .prog_we    ( prog_we       ),
+    .prog_data  ( prog_data     ),
+    .prog_mask  ( prog_mask     ),
+    .prog_ack   ( prog_ack      ),
+    .prog_dst   ( prog_dst      ),
+    .prog_dok   ( prog_dok      ),
+    .prog_rdy   ( prog_rdy      ),
+
+    .sdram_dout     ( sdram_dout     ),
+
+    // ROM load
+    .ioctl_addr     ( ioctl_addr     ),
+    .ioctl_dout     ( ioctl_dout     ),
+    .ioctl_wr       ( ioctl_wr       ),
+    .ioctl_ram      ( ioctl_ram      ),
+    .ioctl_din      ( ioctl_din      ),
+
+    .ioctl_rom      ( ioctl_rom      ),
+    .ioctl_cart     ( ioctl_cart     ),
+    .dwnld_busy     ( dwnld_busy     ),
+    // Save/Load
+    .sav_change     ( sav_change     ),
+    .sav_wait       ( sav_wait       ),
+    .sav_done       ( sav_done       ),
+    .sav_wr         ( sav_wr         ),
+    .sav_ack        ( sav_ack        ),
+    .sav_din        ( sav_din        ),
+    .sav_dout       ( sav_dout       ),
+    .sav_addr       ( sav_addr       ),
+//////////// board
+    .rst            ( rst            ),
+    .rst_n          ( rst_n          ), // unused
+    .game_rst       ( game_rst       ),
+    .game_rst_n     (                ),
+    // reset forcing signals:
+    .rst_req        ( rst_req        ),
+    // joystick
+    .game_joystick1 ( game_joy1      ),
+    .game_joystick2 ( game_joy2      ),
+    .game_joystick3 ( game_joy3      ),
+    .game_joystick4 ( game_joy4      ),
+    .game_coin      ( game_coin      ),
+    .game_start     ( game_start     ),
+    .game_service   ( game_service   ),
+    .game_tilt      ( game_tilt      ),
+    .joyana_l1      ( joyana_l1      ),
+    .joyana_l2      ( joyana_l2      ),
+    .joyana_l3      ( joyana_l3      ),
+    .joyana_l4      ( joyana_l4      ),
+    .joyana_r1      ( joyana_r1      ),
+    .joyana_r2      ( joyana_r2      ),
+    .joyana_r3      ( joyana_r3      ),
+    .joyana_r4      ( joyana_r4      ),
+    // Paddle inputs
+    .game_paddle_1  ( paddle_1       ),
+    .game_paddle_2  ( paddle_2       ),
+    .game_paddle_3  ( paddle_3       ),
+    .game_paddle_4  ( paddle_4       ),
+    .spinner_1      ( spinner_1      ),
+    .spinner_2      ( spinner_2      ),
+    .spinner_3      ( spinner_3      ),
+    .spinner_4      ( spinner_4      ),
+    // Mouse inputs
+    .mouse_1p       ( mouse_1p       ),
+    .mouse_2p       ( mouse_2p       ),
+    .mouse_strobe   ( mouse_strobe   ),
+    .LED            ( LED_USER       ),
+    // Dial emulation
+    .dial_x         ( dial_x         ),
+    .dial_y         ( dial_y         ),
+    // Lightguns
+    .gun_1p_x       ( gun_1p_x       ),
+    .gun_1p_y       ( gun_1p_y       ),
+    .gun_2p_x       ( gun_2p_x       ),
+    .gun_2p_y       ( gun_2p_y       ),
+    .gun_border_en  ( gun_border_en  ),
+    // DIP and OSD settings
+    .dip_test       ( dip_test       ),
+    .dip_pause      ( dip_pause      ),
+    .dip_flip       ( dip_flip       ),
+    .dip_fxlevel    ( dip_fxlevel    ),
+    .dipsw          ( dipsw          ),
+    // screen
+    .rotate         (                ),
+    // HDMI
+    .hdmi_arx       ( VIDEO_ARX      ),
+    .hdmi_ary       ( VIDEO_ARY      ),
+    .hdmi_width     ( HDMI_WIDTH     ),
+    .hdmi_height    ( HDMI_HEIGHT    ),
+    // scan doubler output to VGA pins
+    .scan2x_r       ( VGA_R          ),
+    .scan2x_g       ( VGA_G          ),
+    .scan2x_b       ( VGA_B          ),
+    .scan2x_hs      ( VGA_HS         ),
+    .scan2x_vs      ( VGA_VS         ),
+    .scan2x_clk     ( CLK_VIDEO      ),
+    .scan2x_cen     ( CE_PIXEL       ),
+    .scan2x_de      ( VGA_DE         ),
+    .scan2x_sl      ( VGA_SL         ),
+    // status
+    .st_addr        ( st_addr        ),
+    .st_dout        ( st_dout        ),
+    // Debug
+    .gfx_en         ( gfx_en         ),
+    .debug_bus      ( debug_bus      ),
+    .debug_view     ( debug_view     )
 );
 
-jtosman_game_sdram u_game
-(
-	.rst        ( rst48     ),
-	.clk        ( clk48     ),
-	.rst24      ( rst24     ),
-	.clk24      ( clk24     ),
-	.rst96      ( rst96     ),
-	.clk96      ( clk96     ),
+`include "jtframe_game_instance.v"
 
-	.pxl2_cen   ( pxl2_cen  ),
-	.pxl_cen    ( pxl_cen   ),
-	.red        ( red       ),
-	.green      ( green     ),
-	.blue       ( blue      ),
-	.LHBL       ( LHBL      ),
-	.LVBL       ( LVBL      ),
-	.HS         ( HS        ),
-	.VS         ( VS        ),
+`ifndef JTFRAME_STEREO
+    assign snd_right = snd_left;
+`endif
 
-	.cab_1p     ( cab_1p    ),
-	.coin       ( coin      ),
-	.joystick1  ( joystick1 ),
-	.joystick2  ( joystick2 ),
-	.joystick3  ( joystick3 ),
-	.joystick4  ( joystick4 ),
-	.dial_x     ( 2'd0      ),
-	.dial_y     ( 2'd0      ),
-	.joyana_l1  ( 16'd0 ), .joyana_l2 ( 16'd0 ), .joyana_l3 ( 16'd0 ), .joyana_l4 ( 16'd0 ),
-	.joyana_r1  ( 16'd0 ), .joyana_r2 ( 16'd0 ), .joyana_r3 ( 16'd0 ), .joyana_r4 ( 16'd0 ),
-
-	.snd_en     ( 6'h3f     ),
-	.snd_vol    ( 8'hff     ),
-
-	.status     ( status[31:0] ),
-	.dipsw      ( dipsw     ),
-	.dip_pause  ( game_pause ? 1'b0 : 1'b1 ),
-	.dip_test   ( 1'b1      ),
-	.service    ( 1'b1      ),
-	.tilt       ( 1'b1      ),
-	.dip_flip   ( dip_flip  ),
-	.dip_fxlevel( 2'b11     ),
-
-	.st_addr    ( 8'd0      ),
-	.st_dout    (           ),
-	.gfx_en     ( 4'hf      ),
-	.debug_bus  ( 8'd0      ),
-	.debug_view (           ),
-
-	.ioctl_addr ( ioctl_addr[25:0] ),
-	.ioctl_dout ( ioctl_dout ),
-	.ioctl_wr   ( ioctl_wr  ),
-	.ioctl_rom  ( ioctl_rom ),
-	.ioctl_ram  ( 1'b0      ),
-	.ioctl_cart ( 1'b0      ),
-	.dwnld_busy ( dwnld_busy ),
-	.data_read  ( data_read ),
-
-	.ba0_addr ( g_ba0_addr ), .ba1_addr ( g_ba1_addr ), .ba2_addr ( g_ba2_addr ), .ba3_addr ( g_ba3_addr ),
-	.ba_rd    ( g_ba_rd    ), .ba_wr    ( g_ba_wr    ),
-	.ba_dst   ( ba_dst   ), .ba_dok   ( ba_dok   ), .ba_rdy ( ba_rdy ), .ba_ack ( ba_ack ),
-	.ba0_din  ( ba0_din  ), .ba1_din  ( ba1_din  ), .ba2_din ( ba2_din ), .ba3_din ( ba3_din ),
-	.ba0_dsn  ( ba0_dsn  ), .ba1_dsn  ( ba1_dsn  ), .ba2_dsn ( ba2_dsn ), .ba3_dsn ( ba3_dsn ),
-
-	.prog_data ( prog_data ),
-	.prog_rdy  ( prog_rdy  ),
-	.prog_ack  ( prog_ack  ),
-	.prog_dst  ( prog_dst  ),
-	.prog_dok  ( prog_dok  ),
-	.prog_ba   ( prog_ba   ),
-	.prog_we   ( prog_we   ),
-	.prog_rd   ( prog_rd   ),
-	.prog_mask ( prog_mask ),
-	.prog_addr ( prog_addr ),
-
-	.snd        ( snd      ),
-	.snd_vu     ( snd_vu   ),
-	.snd_peak   ( snd_peak ),
-	.sample     ( sample   )
-);
-
-assign ba0_addr = g_ba0_addr;
-assign ba1_addr = g_ba1_addr;
-assign ba2_addr = g_ba2_addr;
-assign ba3_addr = g_ba3_addr;
-assign ba_rd    = g_ba_rd;
-assign ba_wr    = g_ba_wr;
-
-//////////////////////////////   SDRAM   /////////////////////////////////////
-jtframe_board_sdram #(.SDRAMW(22), .MISTER(1)) u_sdram
-(
-	.rst        ( rst_sd     ),
-	.clk        ( clk48      ),
-	.init       ( sdram_init ),
-	.prog_en    ( dwnld_busy ),
-
-	.ba0_addr   ( ba0_addr   ),
-	.ba1_addr   ( ba1_addr   ),
-	.ba2_addr   ( ba2_addr   ),
-	.ba3_addr   ( ba3_addr   ),
-	.burst_addr ( 22'd0      ),
-	.burst_ba   ( 2'd0       ),
-	.burst_rd   ( 1'b0       ),
-	.burst_wr   ( 1'b0       ),
-	.ba_rd      ( ba_rd      ),
-	.ba_wr      ( ba_wr      ),
-	.ba0_din    ( ba0_din    ), .ba0_dsn ( ba0_dsn ),
-	.ba1_din    ( ba1_din    ), .ba1_dsn ( ba1_dsn ),
-	.ba2_din    ( ba2_din    ), .ba2_dsn ( ba2_dsn ),
-	.ba3_din    ( ba3_din    ), .ba3_dsn ( ba3_dsn ),
-	.burst_din  ( 16'd0      ),
-	.burst_ack  (            ),
-	.burst_rdy  (            ),
-	.burst_dst  (            ),
-	.burst_dok  (            ),
-	.ba_ack     ( ba_ack     ),
-	.ba_rdy     ( ba_rdy     ),
-	.ba_dst     ( ba_dst     ),
-	.ba_dok     ( ba_dok     ),
-	.dout       ( data_read  ),
-
-	.prog_addr  ( prog_addr  ),
-	.prog_data  ( prog_data  ),
-	.prog_dsn   ( prog_mask  ),
-	.prog_ba    ( prog_ba    ),
-	.prog_we    ( prog_we    ),
-	.prog_rd    ( prog_rd    ),
-	.prog_dok   ( prog_dok   ),
-	.prog_rdy   ( prog_rdy   ),
-	.prog_dst   ( prog_dst   ),
-	.prog_ack   ( prog_ack   ),
-
-	.sdram_dq   ( SDRAM_DQ   ),
-	.sdram_a    ( SDRAM_A    ),
-	.sdram_dqml ( SDRAM_DQML ),
-	.sdram_dqmh ( SDRAM_DQMH ),
-	.sdram_nwe  ( SDRAM_nWE  ),
-	.sdram_ncas ( SDRAM_nCAS ),
-	.sdram_nras ( SDRAM_nRAS ),
-	.sdram_ncs  ( SDRAM_nCS  ),
-	.sdram_ba   ( SDRAM_BA   ),
-	.sdram_cke  ( SDRAM_CKE  )
-);
-
-//////////////////////////////   VIDEO   /////////////////////////////////////
-wire [23:0] game_rgb = { red, green, blue };
-
-// ---- CRT Adjust (core-side analog geometry, OSD-controlled) --------------
-// crt_adjust shifts/resizes the picture CONTENT through a line buffer while the
-// native HSync/VSync pass through untouched, so a real CRT never loses lock.
-// Three controls, all live only while CRT Adjust is On:
-//   H-Size     : horizontal stretch/squeeze (read rate vs write rate)
-//   H-Position : horizontal content shift    (read address offset, sync intact)
-//   V-Shift    : vertical line shift          (VSync delayed N lines)
-// Inserted BEFORE arcade_video: the module runs at the native 6 MHz pixel rate;
-// arcade_video's scandoubler/mixer then runs off the read clock-enable. Replaces
-// the old jtframe_resync H/V-Pos, which moved the sync (and whose analog H-Size
-// half always needed a sys_top edit — this content-shift variant needs none).
-wire crt_on = status[32];
-
-// Decode signed 5-bit OSD amounts (0, +1..+15, -16..-1).
-wire signed [4:0] hsize_s  = $signed(status[37:33]);
-wire signed [4:0] hpos_s   = $signed(status[42:38]);
-wire signed [5:0] vshift_s = $signed(status[47:43]);
-wire signed [8:0] hpos_off = hpos_s;   // sign-extend to the module's 9-bit H-Position
-
-// Read clock-enable: one pixel every (32 + hsize) QUARTER-cycles of clk48
-// (base 32 = 8 whole cycles = the native 6 MHz pixel; each H-Size step ~3%).
-// Reset the accumulator on the NATIVE HSync rise -> deterministic per-line phase.
-reg  HS_d;
-always @(posedge clk48) HS_d <= HS;
-wire native_hs_rise = HS & ~HS_d;
-
-wire [7:0] rd_period = 8'd32 + {{3{hsize_s[4]}}, hsize_s};   // -16..+15 -> 16..47
-reg  [7:0] rd_acc;
-wire       rd_tick = (rd_acc + 8'd4) >= {1'b0, rd_period};
-always @(posedge clk48) begin
-	if      (native_hs_rise) rd_acc <= 8'd0;
-	else if (rd_tick)        rd_acc <= rd_acc + 8'd4 - {1'b0, rd_period};
-	else                     rd_acc <= rd_acc + 8'd4;
-end
-wire rd_ce = crt_on ? rd_tick : pxl_cen;
-
-// The module: fed the NATIVE sync (keeps the CRT locked) and the TRUE vertical
-// blank on vb_in (so the downstream OSD keeps a valid vertical frame boundary).
-wire [7:0] str_r, str_g, str_b;
-wire       str_hs, str_vs, str_hb, str_vb;
-crt_adjust #(.VTOTAL(274)) u_crt_adjust
-(
-	.clk      ( clk48         ),
-	.pxl_cen  ( pxl_cen       ),        // write rate (native 6 MHz pixel)
-	.pxl2_cen ( rd_ce         ),        // read rate  (H-Size)
-	.active   ( crt_on        ),
-	.hsize    ( hsize_s       ),
-	.hoffset  ( hpos_off      ),
-	.voffset  ( vshift_s      ),
-	.r_in     ( red           ),
-	.g_in     ( green         ),
-	.b_in     ( blue          ),
-	.hs_in    ( HS            ),        // NATIVE HSync -> no desync
-	.vs_in    ( VS            ),
-	.hb_in    ( ~LHBL | ~LVBL ),        // combined blank
-	.vb_in    ( ~LVBL         ),        // true vertical blank
-	.r_out    ( str_r         ),
-	.g_out    ( str_g         ),
-	.b_out    ( str_b         ),
-	.hs_out   ( str_hs        ),
-	.vs_out   ( str_vs        ),
-	.hb_out   ( str_hb        ),
-	.vb_out   ( str_vb        )
-);
-
-// Keep the OSD PUT: the MiSTer OSD centers on the RISING edge of VGA_DE. Build a
-// DE window whose rising is anchored to the NATIVE active region and whose
-// falling follows the stretched active's end, so H-Position slides the image
-// without dragging the OSD. Fed to arcade_video as its (active-low) HBlank; it
-// already drops during VBlank, so arcade_video's VBlank is tied low then.
-reg  lvbl_1l;
-always @(posedge clk48) if (native_hs_rise) lvbl_1l <= LVBL;   // per-line vertical-visible
-wire native_active = LHBL & lvbl_1l;
-reg  native_active_d;
-always @(posedge clk48) if (pxl_cen) native_active_d <= native_active;
-wire native_rise = native_active & ~native_active_d;
-
-wire str_active = ~str_hb;
-reg  str_active_d;
-always @(posedge clk48) if (rd_ce) str_active_d <= str_active;
-wire str_fall = str_active_d & ~str_active;
-
-reg de_osd;
-always @(posedge clk48) begin
-	if      (native_rise) de_osd <= 1'b1;
-	else if (str_fall)    de_osd <= 1'b0;
-end
-
-// Mux: CRT Adjust On -> module outputs at the read rate; Off -> native
-// passthrough (bit-identical to no module). jtframe LHBL/LVBL are active-low;
-// arcade_video wants active-high HBlank/VBlank.
-wire        av_ce  = crt_on ? rd_ce                 : pxl_cen;
-wire [23:0] av_rgb = crt_on ? {str_r, str_g, str_b} : game_rgb;
-wire        av_hb  = crt_on ? ~de_osd               : ~LHBL;
-wire        av_vb  = crt_on ? 1'b0                  : ~LVBL;
-wire        av_hs  = crt_on ? str_hs                : HS;
-wire        av_vs  = crt_on ? str_vs                : VS;
-
-arcade_video #(.WIDTH(320), .DW(24)) u_arcade_video
-(
-	.clk_video          ( clk48           ),
-	.ce_pix             ( av_ce           ),
-
-	.RGB_in             ( av_rgb          ),
-	.HBlank             ( av_hb           ),
-	.VBlank             ( av_vb           ),
-	.HSync              ( av_hs           ),
-	.VSync              ( av_vs           ),
-
-	.CLK_VIDEO          ( CLK_VIDEO       ),
-	.CE_PIXEL           ( CE_PIXEL        ),
-	.VGA_R              ( VGA_R           ),
-	.VGA_G              ( VGA_G           ),
-	.VGA_B              ( VGA_B           ),
-	.VGA_HS             ( VGA_HS          ),
-	.VGA_VS             ( VGA_VS          ),
-	.VGA_DE             ( VGA_DE          ),
-	.VGA_SL             ( VGA_SL          ),
-
-	.fx                 ( status[5:3]     ),
-	.forced_scandoubler ( forced_scandoubler ),
-	.gamma_bus          ( gamma_bus       )
-);
-
-// ---- rotation: osman is horizontal (ROT0) -> always passthrough -----------
-wire no_rotate  = 1'b1;
-wire rotate_ccw = 1'b0;
-wire video_rotated;
-
-assign FB_FORCE_BLANK = 1'b0;
-
-screen_rotate u_rotate
-(
-	.CLK_VIDEO      ( CLK_VIDEO      ),
-	.CE_PIXEL       ( CE_PIXEL       ),
-	.VGA_R          ( VGA_R          ),
-	.VGA_G          ( VGA_G          ),
-	.VGA_B          ( VGA_B          ),
-	.VGA_HS         ( VGA_HS         ),
-	.VGA_VS         ( VGA_VS         ),
-	.VGA_DE         ( VGA_DE         ),
-
-	.rotate_ccw     ( rotate_ccw     ),
-	.no_rotate      ( no_rotate      ),
-	.flip           ( 1'b0           ),
-	.video_rotated  ( video_rotated  ),
-
-	.FB_EN          ( FB_EN          ),
-	.FB_FORMAT      ( FB_FORMAT      ),
-	.FB_WIDTH       ( FB_WIDTH       ),
-	.FB_HEIGHT      ( FB_HEIGHT      ),
-	.FB_BASE        ( FB_BASE        ),
-	.FB_STRIDE      ( FB_STRIDE      ),
-	.FB_VBL         ( FB_VBL         ),
-	.FB_LL          ( FB_LL          ),
-
-	.DDRAM_CLK      ( DDRAM_CLK      ),
-	.DDRAM_BUSY     ( DDRAM_BUSY     ),
-	.DDRAM_BURSTCNT ( DDRAM_BURSTCNT ),
-	.DDRAM_ADDR     ( DDRAM_ADDR     ),
-	.DDRAM_DIN      ( DDRAM_DIN      ),
-	.DDRAM_BE       ( DDRAM_BE       ),
-	.DDRAM_WE       ( DDRAM_WE       ),
-	.DDRAM_RD       ( DDRAM_RD       )
-);
-
-assign LED_USER = dwnld_busy;
-
-//////////////////////////////   AUDIO   /////////////////////////////////////
-assign AUDIO_L = snd;
-assign AUDIO_R = snd;
-assign AUDIO_S = 1'b1;   // signed samples
-
-endmodule
-
-//----------------------------------------------------------------------------
-// Async-assert / sync-deassert active-high reset synchronizer.
-//----------------------------------------------------------------------------
-module sync_rst(input clk, input arst, output reg rst);
-	reg r;
-	always @(posedge clk or posedge arst)
-		if (arst) {rst, r} <= 2'b11;
-		else      {rst, r} <= {r, 1'b0};
 endmodule
