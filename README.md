@@ -12,8 +12,17 @@ This is a mame derived core compatibile with:
 
 ## Known issues
 
-- Chain reaction sprites are garbled
-- Heavy Smash some priority issues
+- Some scene replays differ from MAME at the first video column.
+
+## Video fixes
+
+- Chain Reaction sprite ROM interleave is fixed in the MRA. Replace its MRA
+  and reload the game; this fix needs no RBF rebuild.
+- Heavy Smash priority is fixed in the RTL. Rebuild the RBF to use that fix.
+
+All 15 captured scenes per game replay successfully. Mixer regression tests
+(`tests/colmix/run.sh`) and Quartus analysis/elaboration pass; hardware testing
+of the updated source remains.
 
 ## Thanks
 

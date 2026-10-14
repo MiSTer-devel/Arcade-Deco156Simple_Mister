@@ -31,7 +31,7 @@
     <rbf>jtosman</rbf>
     <joystick>4</joystick>
     <region>World</region>
-    <rom index="0" zip="chainrec.zip" md5="None">
+    <rom index="0" zip="chainrec.zip" md5="None" asm_md5="506c608c6c227b42befa8b582999b512">
         <!-- 
   0[0]: jm         Joe & Mac Returns
   0[1]: cr         Chain Reaction
@@ -52,8 +52,8 @@
         <!-- tiles - starts at 0x100000 - length 0x200000 (21 bits) -->
         <part name="mcc-00" crc="646b03ec"/>
         <part repeat="0x100000"> FF</part>
-        <!-- PCM1_START -->
         <!-- JTFRAME_BA2_START -->
+        <!-- PCM1_START -->
         <!-- oki1 - starts at 0x300000 - length 0x80000 (19 bits) -->
         <part name="mcc-04" crc="86ee6ade"/>
         <part repeat="0x40000"> FF</part>
@@ -63,10 +63,14 @@
         <part repeat="0x100000"> FF</part>
         <!-- JTFRAME_BA3_START -->
         <!-- sprites - starts at 0x580000 - length 0x200000 (21 bits) -->
-        <part name="u3" crc="92659721"/>
-        <part name="u4" crc="e304eb32"/>
-        <part name="u5" crc="1b6f01ea"/>
-        <part name="u6" crc="531a56f2"/>
+        <interleave output="16">
+            <part name="u3" crc="92659721" map="01"/>
+            <part name="u4" crc="e304eb32" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="u5" crc="1b6f01ea" map="01"/>
+            <part name="u6" crc="531a56f2" map="10"/>
+        </interleave>
         <!-- Total 0x780000 bytes - 7680 kBytes -->
     </rom>
     <rom index="2" zip="chainrec.zip">
