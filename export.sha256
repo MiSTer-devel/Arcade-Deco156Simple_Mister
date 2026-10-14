@@ -31,12 +31,12 @@
 14060725875b88fb8ab9289a3359b2302a93d388994c2631b9f3d7836e2ab806  ./rtl/jtframe/ram/jtframe_dual_ram.v
 148dc6a8124d36ac2898a45d085960cc05178a76d7297fde8877925fc0a74e88  ./sys/build_id.tcl
 15d55807c6743699f0b2908e277bfe075b09ff6cccbe773c628a2eaa0172bb0f  ./rtl/jtframe/sdram/jtframe_headerbyte.v
+15e6b503b356df6140ed54ba00c94d15bff5efb40cb2127312bc819ce931d490  ./release/Arcade-Deco156Simple_20261014.rbf
 1627136c07754606863708e01f08b34923af483e17b0981a825723376fe287bf  ./rtl/osman/amber/a23_localparams.v
 1662fff7650cd443db81db7f0707f5583d223372b3e3c41af2d41ea4f3ac38f3  ./sys/pll_audio.v
 183cd1a8d4dbe481d5965fc769180bec7ed276c799b127f856ae3c80e5320460  ./rtl/osman/jtosman_eeprom.v
 186a583c646ed507990c65d43f314b51b4ef0f5381195c0702a33b7c3451841e  ./tests/amber/swap.s
 195beda185b1dc67482dacacb1274aa9a83ad42d1af4745a38f86c0a6a76f967  ./rtl/jtframe/keyboard/jtframe_keyboard.v
-1aeffd5bd5157764fc3a114d8fced4b7ec18b7bbc45cd9db01ece3902cf40ddc  ./provenance/supplemental-assets.sha256
 1bec912c1713fa80894f8a2b8718806d6c1a08aecaf7aa42e88fe126050268a4  ./rtl/jtframe/sdram/jtframe_romrq_lcache.v
 1dbce92be3f54887d94e1ad53a3c9cb3774469e0ac0b020833676b05d3c8204c  ./rtl/jtframe/sdram/jtframe_burst_mode.v
 1e551d99859fa75ff7b97b95aed94066857410b27c47965f7365ff8d15c28849  ./rtl/jtframe/mister/hdl/pll7000/pll/pll_0002.v
@@ -62,14 +62,11 @@
 29f31e9e146a757ea47136be7b53809f105ddc5ec257311d4814243e5ee2a56e  ./rtl/jt6295/jt6295_rom.v
 2a7914816cc4fb70e7aa87cb76b9408f33bc342b2aa536aa0e9369735741f3c8  ./rtl/jtframe/jtframe_countup.v
 2b24d2a561d81cc8b20f725884ee9c243e619058e42ebcdcf6f491d33008696c  ./sys/pll_audio/pll_audio_0002.v
-2bd79ba94a220f26e6bff2d3694a82e9e417e0e9f7d3c805cf809dd38f59d827  ./provenance/jtframe_mister.sv.original
 2d56d21972587b7cf185d6e9201c4004e44590b11c7275b3796caefba60e46fa  ./rtl/jteeprom/jt9346_16b8b.v
 31ed2c917bd6680b4d60328e71a4f28015bd5fcec21e15b290eacec88971167d  ./sys/video_mixer.sv
 322d04e3e915e8c3b32ac627db528c2b58ef8f04a140c54ff52f6b1c068bc83e  ./rtl/osman/jtosman_video.v
 32971de42ae92c42b1ec83e07bc35b9513b8a48de2eda5d5654581a2bb41c06e  ./sys/emu_ports.vh
-32b0ed8f217691863ed3d9f1c92ef32ef771d8889a25c5a761afe1af0f4edf5f  ./release/jtosman.rbf
 33776c926a8f11c8287dd5e47743c7d51886a246cdf53b95e7be5e803718fc2c  ./rtl/osman/jtosman_colmix.v
-33aa1051fd032ec5d9583efa976af53648b5afcc46741c0ed112b870849993d9  ./export-info.txt
 34c11c19e6bf3797d2db2e41314ce802f5a01041265ce943b54e7f20eb2027c9  ./sys/pll_cfg/altera_pll_reconfig_top.v
 352d31dd185bce14d9d1e8a4999fbb5f2b5b2e42b048bdc9f4b828119cc5127a  ./sys/sigma_delta_dac.v
 3609826a659492c07050a2a765d92f2bffd6e177807d0cbd6c401632b786f034  ./rtl/jtframe/sound/jtframe_pole.v
@@ -96,7 +93,6 @@
 47f9189102d048382970a3e93924ed4776245076fb9124fb777ba0afb04f53a5  ./rtl/jtframe/sdram/jtframe_burst_io.v
 484c80da60a05d5a5f060dc437b33b2344088ac08492b0d970e640ca00deea4a  ./rtl/generated/jtosman_game_sdram.v
 499561547c1045a46f1137558e2bab83d8e026e5d32669b5c5779a264b7ed676  ./sys/pll_hdmi.v
-4a37e8359c3abbc53860a50112c93131441ee4f7b4518fb01ff0a53085641041  ./provenance/jtframe_emu.original.sv
 4ad39571d16a4b25347030d75ffdf601803ddec71e2e3fcabe962103cc45a1a2  ./sys/mt32pi.sv
 4b5e8889ad9687b3a459b0f317a8d2eee5a9eae57314c9913b657f7fd2548e94  ./tests/colmix/test.v
 4bb15c7ac934ff9d5e09b235ba076351ac830e245efa0ad5935151bc47630599  ./rtl/jtframe/sdram/jtframe_ramslot_ctrl.v
@@ -105,7 +101,6 @@
 4cee6164e9cb2eae5ac560f9eb7295575c919f8f7216395421d7e692a069f620  ./rtl/osman/amber/a23_barrel_shift_fpga.v
 4d90db1406dd0277f6af5277d30cd7ab357af4032cc6568408cdaf5f36ff4ffb  ./rtl/jtframe/debug/jtframe_debug.v
 4dd716430a9415a22aa21f42988b3810fd0953e46b8e0dab6aa054be029d9220  ./deco56_xor.hex
-4e08fd32f0d70835de7cdeaa8d1684fe4bf5271409b778c919899ac0df700bfd  ./provenance/amber-before/a23_fetch.v
 4e1b88c50d5d8a7090c1823ced2c05a3a132146763f743e2466b033309a5a316  ./rtl/jtframe/jtframe_sh.v
 4e971d743c818a6a39693e353583a19d744969133df43bd4f3cecc7a8a8e817d  ./tests/amber/swap.hex
 4f41376069b2070079d8ba4ae4a722c8ecfe3ca4b99798d0bdd8cda986b5ad5b  ./sys/sys_dual_sdram.tcl
@@ -121,7 +116,6 @@
 54cdff6be71dc6aa577871ca5573dda7f54825426249ff3014067450b0bd4ea5  ./rtl/jt6295/jt6295_sh_rst.v
 54e015940b854e44cc8a5e5b4d5d37aaab35e2f929fe9b1a0f254c83dcd7db3c  ./rtl/osman/amber/a23_coprocessor.v
 5571604010bf98858a0797a2286d2389e105d32a97b42508865b02ba4237dd0d  ./sys/pll_hdmi.qip
-558426ec466235c509eb2cf84f74810aff9a76786e469a8835a403d7aba1f964  ./provenance/amber-before/a23_wishbone.v
 570a8095c15af84a60015b5eab105cee6e2d7edde77e20f0ce40c075ab2db8b7  ./sys/iir_filter.v
 595d6ce1e186a947d5cd1aef4184e85ee3f2a9c222bd6880ef40e07525485b4b  ./rtl/jtframe/lightgun/jtframe_lightgun_joyemu.v
 5a88e3132977ad7b8d787ae6bbafbd0fb097190b7ab0872f0cb9a74160bdb7cb  ./rtl/jtframe/video/jtframe_linebuf.v
@@ -139,6 +133,7 @@
 6692b26ba327e4a066ab600c64ed55b51c17d858599b9deeb4776407e41d7759  ./rtl/jtframe/mister/hdl/pll7000/pll.v
 6693f3c287527f5e78195a2156a0786859ce057dedff79f3baffdc703859e6c6  ./rtl/jtframe/sdram/jtframe_sdram64_init.v
 672715f5f171a5f1bc97370d23292766b352804012e5f579a74ed43c71f7faca  ./rtl/jtframe/ram/jtframe_ram.v
+674eff8254327b53e14dd06480d855731cac23f9be9c726b059ee61713661dda  ./export-info.txt
 679c039abcd05d94bfd16f0d13d1ae21ea38033a425f99f2af50d47af4565664  ./rtl/jtframe/video/jtframe_short_blank.v
 67ecee5e044ed60ea160e9edca064e042a0c7b9e9ac48279e6a183d102f61bcd  ./tests/amber/test.v
 67f43f33a3d384c3c7db1e58f3b2dd100a14504514d30974d3af5ef3aedbcbed  ./rtl/jtframe/video/jtframe_blank.v
@@ -155,13 +150,12 @@
 70fe9f54e5ed07f710a963c60f33914b2492aa01118e317fe0792a8634ed0958  ./rtl/jtframe/clocking/jtframe_gated_cen.v
 7139faf33ae28066e805f290b15401eddb092d4b7d31b529a3ce1f0213fbc90a  ./sys/pll_q17.qip
 718a089c8fe603e1083ef9576fcb6c678185dcd334c9f295d7000c5448c9bca1  ./rtl/osman/amber/a23_multiply.v
-720eab03d3a2f49d2e661c0b39361a3b0f2c69598e53fdaa34d9e846fe49c30e  ./provenance/supplemental-assets.txt
 72211ed8a498f283c514b668c540432c493be91b42b8a4d295543e485d2a48e3  ./rtl/jtframe/keyboard/jtframe_ps2key_decoder.v
 74943b658cd3f4adc5b74c72f225fb42b95122a1c5e453df860a4c6a9bf72fc9  ./sys/alsa.sv
 76de62b215161f49b11157046e82fae2de04c1477b18fced18606a3cd0fb64db  ./rtl/jtframe/sound/jtframe_mixer_en.v
 7707b0a911643b4989ca6c1f7e4eb9e1ffc9c4cc5b537d3fdcbdfdcad6713948  ./rtl/jtframe/sdram/jtframe_rom_3slots.v
 776422b38f7055a5b18fa98fb09d17b03d19e3f79c721398df2086b10feada8e  ./rtl/jtframe/mister/hdl/jtframe_mister_dwnld.v
-77a0dfd3a46b235a697253c2aa8866e0a7c27f9d1679a4d7a9f219b2b96e5487  ./release/Heavy Smash (Europe version -2).mra
+77a0dfd3a46b235a697253c2aa8866e0a7c27f9d1679a4d7a9f219b2b96e5487  ./prerelease/Heavy Smash (Europe version -2).mra
 79994541ffe2a14290e5e4f2933abca4e027a02aa733bb4b74d3f15dca137b27  ./rtl/jtframe/cheat/jtframe_cheat.v
 79e41b4056c8d59f1eb28fd22d00f9c578de2354f2dab825be193fdc3c18db47  ./rtl/jtframe/video/jtframe_lfbuf_ddr_ctrl.v
 7a0140c39b9d14166d66a69f409b33f938a9086f7fed2b46683e4b8f4a4329c0  ./rtl/osman/amber/a23_functions.v
@@ -175,7 +169,7 @@
 802d07b7a08f42373e242aa6c6bf5063fbd65c1871135e693518f51217167d2a  ./rtl/jtframe/video/tilemap/jtframe_tilemap.v
 805a39c02e61cadb1c8056ee50bcd275a53d8d56d4eb3dc2d2d8e7389c04405e  ./rtl/generated/mem_ports.inc
 815f6f3f754d70b29c108417ea5ce2e38a5f11bdad59188a216fef5aceb51ab6  ./rtl/jtframe/keyboard/jtframe_filter_keyboard.v
-8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643  ./provenance/Template_MiSTer.LICENSE
+8171413eb7b3ae3716416cf2e35bacbf518717ad3de1fb45ff494e3ba01fa370  ./rtl/osman/jtosman_game.v
 825fa1197c8e9f31c19c2fef1b01693133fb7df3cfb2dd831f2848a98fc6899c  ./sys/ltc2308.sv
 840389458d2e6020b5c0773363ea44a251843f47321fed182f64d7a06a188542  ./rtl/jtframe/keyboard/jt4701.v
 86626eae7ae59367e37c267c61cb24716450dbe00786c88177eabc1e93e7a3ba  ./prerelease/_alternatives/_Heavy Smash/Heavy Smash (Japan version -2).mra
@@ -224,7 +218,6 @@ a5d6b2548b75d688fb92770f5666df48f2ed24ce19ac30707f5f78228302a605  ./rtl/jtframe/
 a5fc7416a5fb41d87055c4ca1ce866bfde3bb57121af6a0b737e965b974a774e  ./rtl/jtframe/sdram/jtframe_ram1_4slots.v
 a617bba332c4611caf81ba585b8f6828c7899aec5f81664a870f10419cb9b451  ./sys/spdif.v
 a7ba942d3b332173b2ce8f05e34831c6ade9e06041d0bd51c851ff9c267ced0e  ./deco56_address.hex
-a88dc7d28435a52b7a498c4c612132d690b6f497be02f62645413d9f2df2a58c  ./provenance/amber-before/a23_execute.v
 a8c21f246fea8e47b5be2ba0f77b23b6f2e7822f1d4a920387d894493bcffda2  ./rtl/jtframe/mister/hdl/jtframe_mister_status.v
 ab0eb2858fe08dfa26b0ee9a6a3b261519587a46bfc8b0ea7f743afa37c8f576  ./release/Chain Reaction (World, Version 2.2, 1995.09.25).mra
 ab606255dcd64da2cf8e7e1932681d5dba2a5916686092dd303d7f668801d49e  ./rtl/jtframe/sdram/jtframe_sdram.v
@@ -257,7 +250,6 @@ bb60df0ea6b938ad7547d558f2aaa2aceef173ea38c11ce8d41a5f97bd8ac54b  ./.github/work
 bc02383bab920584f517783a9659e998d0d6536e7c726572a8c2dfbd01e7e5e0  ./rtl/jtframe/debug/jtframe_binhex_overlay.v
 bc160317f92ca606c4beafc44fe017f250656d0f981d7d505af7f11be32e2540  ./rtl/jtframe/sdram/jtframe_rom_4slots.v
 bd27d66997c49d219a59ce2a038adb083cb1aa7ac046066f7293a01ef8ce9d0a  ./rtl/cninja/jtcninja_decospr.v
-bd5e2aa17d290b613087cbdf294ecd730f1ea42f5e1b3ad9617fce0cfbe90fc9  ./provenance/amber-fixes.patch
 bdc82c49a49211eaf5c2ffea7300bd5f6e01052a575bef6714596557d8ddf22f  ./release/Osman (World).mra
 bf1aea3d324a9b236acde69615056fef38ab6220b3fa237fff40057c896ca904  ./rtl/jtframe/keyboard/jtframe_multiway.v
 bf1e45ab01bb2921eb6b8a25a8c4465cdd34e77f22dbca45d7a7cf5fd3cab9a4  ./rtl/jtframe/video/jtframe_font.v
@@ -276,7 +268,6 @@ c86c85ab68123be4f68489dba5ba1425645b64afb51cd3d696f3749d2307c46f  ./rtl/jtframe/
 ce1fb63785e8bddcf20cf06d7c861ccf44cca816978cb921b8b47d34eadef7f3  ./prerelease/_alternatives/_Heavy Smash/Heavy Smash (Asia version -4).mra
 ce569d5c356a086fbc26bf656d3776ec3c8908d7c16b3d61cbf8e32a9119ee06  ./rtl/jtframe/cpu/pauloblaze/io_module.vhd
 ce64cdd7f900ded7b9cd9aa728dab7383b7561cdc75dfe82ab23fe27a3d217d3  ./sys/arcade_video.v
-cf59af32a3441bf709c66741eacde27a5f7dc8cea1c0f102dba241ce0cc2fd6c  ./provenance/emu.sv.original
 cf735da30db48cb22f1753dcdb344a35fc60a011597da9e514ec1dc69998882a  ./rtl/jt6295/jt12_interpol.v
 cff2738c649f8ec7cb8e2d5ef35db71ca0ba5cec8c64a44850b32a310f9509a1  ./rtl/jtframe/sdram/jtframe_rom_5slots.v
 d0390e689c5ce86d1a1a70a2e040a04db6dde893321824ff2d66b40d55187156  ./rtl/jtframe/keyboard/jtframe_dial.v
@@ -292,7 +283,6 @@ d8a7e2902a9cf2f3588679469bdda2235022ec140f2751dea4776c5a4415abe3  ./rtl/jtframe/
 d8d9ffeb6a7383bd92a547a000e9021ef413bcece0ea86e0f325953d6234c05a  ./prerelease/_alternatives/_Joe & Mac Returns/Joe & Mac Returns (World, Version 1.0, 1994.05.19).mra
 dbdcbaa21a35831269588a1f3145d92173a86e39932baf82359dcd45e523b6a8  ./rtl/jtframe/lightgun/jtframe_lightgun_position.v
 dc63f5923e9663d2a8c1c2596750f066114f6e4105735a832c040b27efc251b8  ./rtl/osman/amber/debug_functions.v
-dd231afab5ea36797e30c38dd06c68a9f6eac1fd15de0b125b488be1b102110c  ./rtl/osman/jtosman_game.v
 dd2618b266e9ec5e2b262379545779ca5a3fd283ca078bb7e637fa828e81183c  ./rtl/jtframe/sound/jtframe_vumeter.sv
 dd6d1cd71fc93e60c67cb77c1b27b79cbb1d8d36137b851f0cb458c464125df5  ./rtl/jtframe/sdram/jtframe_cache_mux.v
 de648286a832ee72839dd6abb444231a4238d32b2c26f29426399d2221d7bf5b  ./sys/pll_hdmi/pll_hdmi_0002.qip
@@ -304,13 +294,13 @@ e07ae93193537830b3bc9029465e763a6bfe354c25b7e7747eeeb4094b08ad10  ./sys/pll_cfg/
 e165988b55f4fc783a26813a99b6aac7bdf2201d7f557206dd87d704c2d4b527  ./rtl/jt6295/jt6295_adpcm.v
 e37d739764578b424f67645cc8897a96d39dc94e8733884ea03eefdde495c2ce  ./rtl/jtframe/sdram/jtframe_cache_ctrl.sv
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./msg.bin
+e4243c634f1aab867187f5d37019443ba9b2ce9d268f50dbc127f6d285e33569  ./rtl/osman/jtosman_snd.v
 e4cbfd22985fa046b546c0cfc626fccf773d9098b7c6a595f8bea66d67d25203  ./sys/sys_analog.tcl
 e50cb3be92bfe52e59d0c5fb0e6aec86dacf27ad70ebeaf73ab3704f4185a837  ./rtl/jtframe/sound/jtframe_iir2.v
 e601c7d7c996cb46a13919db1d527aca5f490bb90762bbc984908f3cb92babbc  ./prerelease/_alternatives/_Party Time Gonta the Diver II/Ganbare! Gonta!! 2 - Party Time Gonta the Diver II (Japan Release).mra
 e66b5275c3c500322d72c5d1833dd54cd6c2fd647b9d518265a417a4798b4202  ./rtl/jtframe/sdram/jtframe_ioctl_range.v
 e9ab2b7c89b4347854810387550a65458aa3ec9de1bd26ad74328d73376f6a88  ./sys/sys.tcl
 ea11022b13d48a29c1cf8d2defe3a08ce831342134760a77852219f4001624b9  ./rtl/osman/amber/a23_register_bank.v
-ea3fe00c0e35dde69a8d3ce3482c8dc04d8c828ac6bb82c67660d7c213ea3d94  ./rtl/osman/jtosman_snd.v
 eb0d96fbcdb2e3ab6cf67428f94ef405cf29430c50515d3f186e1551bfd4ccf2  ./rtl/jtframe/video/crosshair/jtframe_crosshair_color.v
 eb1afa90c6e7e559feb6fcb78bd319e385446686fda8e067045f3a013737e9da  ./rtl/osman/amber/sram_byte_en.v
 ec93a04175688c4f8e3a7dbc03ef2e243a373573f98ef45153c72b44a3e6887e  ./rtl/jtframe/sdram/jtframe_romrq_xscache.v
