@@ -20,8 +20,8 @@ This is a mame derived core compatibile with:
 
 This core was made possible by
 
-Jotego with JTFRAME and its included modules
-Sorg via the mister platform
-Conor Santifort for the Amber ARMv2a CPU core (OpenCores)
-Umberto Parisi for some patches to the Amber23 core
-Claude Code / Codex / Metr AI
+- Jotego with JTFRAME and its included modules
+- Sorg via the mister platform
+- Conor Santifort for the Amber ARMv2a CPU core (OpenCores)
+- Umberto Parisi for some patches to the Amber23 core
+- Claude Code / Codex / Metr AI
