@@ -5,7 +5,6 @@ cores/osman/seed/mister/0/build/deco56_address.hex	deco56_address.hex
 cores/osman/seed/mister/0/build/deco56_swap.hex	deco56_swap.hex
 cores/osman/seed/mister/0/build/deco56_xor.hex	deco56_xor.hex
 cores/osman/seed/mister/0/build/msg.bin	msg.bin
-cores/osman/seed/mister/0/build/msg.hex	msg.hex
 cores/cninja/hdl/jtcninja_deco16.v	rtl/cninja/jtcninja_deco16.v
 cores/cninja/hdl/jtcninja_decospr.v	rtl/cninja/jtcninja_decospr.v
 modules/jtframe/target/mister/hdl/jtframe_emu.sv	rtl/emu.sv
@@ -45,18 +44,11 @@ modules/jtframe/hdl/debug/jtframe_debug_ctrl.v	rtl/jtframe/debug/jtframe_debug_c
 modules/jtframe/hdl/debug/jtframe_debug_keys.v	rtl/jtframe/debug/jtframe_debug_keys.v
 modules/jtframe/hdl/debug/jtframe_debug_viewmux.v	rtl/jtframe/debug/jtframe_debug_viewmux.v
 modules/jtframe/hdl/debug/jtframe_sys_info.v	rtl/jtframe/debug/jtframe_sys_info.v
-modules/jtframe/hdl/inc/game_audio.v	rtl/jtframe/inc/game_audio.v
-modules/jtframe/hdl/inc/game_sdram.v	rtl/jtframe/inc/game_sdram.v
-modules/jtframe/hdl/inc/header.v	rtl/jtframe/inc/header.v
-modules/jtframe/hdl/inc/ioctl_dump.v	rtl/jtframe/inc/ioctl_dump.v
 modules/jtframe/hdl/inc/jtframe_common_ports.inc	rtl/jtframe/inc/jtframe_common_ports.inc
 modules/jtframe/hdl/inc/jtframe_debug.vh	rtl/jtframe/inc/jtframe_debug.vh
 modules/jtframe/hdl/inc/jtframe_game_instance.v	rtl/jtframe/inc/jtframe_game_instance.v
 modules/jtframe/hdl/inc/jtframe_game_ports.inc	rtl/jtframe/inc/jtframe_game_ports.inc
 modules/jtframe/hdl/inc/jtframe_mem_ports.inc	rtl/jtframe/inc/jtframe_mem_ports.inc
-modules/jtframe/hdl/inc/mmr.v	rtl/jtframe/inc/mmr.v
-modules/jtframe/hdl/inc/ports.v	rtl/jtframe/inc/ports.v
-modules/jtframe/hdl/inc/prom_dwnld.v	rtl/jtframe/inc/prom_dwnld.v
 modules/jtframe/hdl/jtframe_bcd_cnt.v	rtl/jtframe/jtframe_bcd_cnt.v
 modules/jtframe/hdl/jtframe_board.v	rtl/jtframe/jtframe_board.v
 modules/jtframe/hdl/jtframe_board_sdram.v	rtl/jtframe/jtframe_board_sdram.v
@@ -211,7 +203,6 @@ cores/osman/hdl/amber/a23_config_defines.v	rtl/osman/amber/a23_config_defines.v
 cores/osman/hdl/amber/a23_coprocessor.v	rtl/osman/amber/a23_coprocessor.v
 cores/osman/hdl/amber/a23_core.v	rtl/osman/amber/a23_core.v
 cores/osman/hdl/amber/a23_decode.v	rtl/osman/amber/a23_decode.v
-cores/osman/hdl/amber/a23_decompile.v	rtl/osman/amber/a23_decompile.v
 cores/osman/hdl/amber/a23_execute.v	provenance/amber-before/a23_execute.v
 cores/osman/hdl/amber/a23_fetch.v	provenance/amber-before/a23_fetch.v
 cores/osman/hdl/amber/a23_functions.v	rtl/osman/amber/a23_functions.v

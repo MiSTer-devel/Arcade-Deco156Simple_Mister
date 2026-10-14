@@ -9,3 +9,4 @@ supplemental_assets=fir_192k_4k.hex,font0.hex,jt6295_up4.hex,jt6295_up4_soft.hex
 deduplicated_assets=rtl/osman/deco56_address.hex,rtl/osman/deco56_xor.hex,rtl/osman/deco56_swap.hex; canonical copies at project root
 source_list=Arcade-Deco156Simple.qip
 post_export_changes=adapted Amber read/write completion, held read data and warm-reset status; CPU clocks unchanged; Heavy Smash colmix matches JTCORES: opaque PF2 < sprites < PF1; other game priorities unchanged; Chain Reaction MRA restores MAME even/odd sprite ROM interleave; no HDL change required
+unused_cleanup=10 files removed; project QSF/QIP, includes and file literals retained; stock sys and release assets preserved

@@ -21,17 +21,17 @@
 
 <misterromdescription>
     <about author="andrea bogazzi" webpage="https://patreon.com/jotego" twitter="@topapate" source="https://jotego/jtcores"/>
-    <rotation>horizontal</rotation>
-    <name>Joe &amp; Mac Returns (World, Version 1.1, 1994.05.27)</name>
-    <setname>joemacr</setname>
+    <rotation>vertical (cw)</rotation>
+    <name>Party Time: Gonta the Diver II - Ganbare! Gonta!! 2 (World Release)</name>
+    <setname>prtytime</setname>
     <mameversion>0288</mameversion>
-    <year>1994</year>
-    <manufacturer>Data East Corporation</manufacturer>
+    <year>1995</year>
+    <manufacturer>Mitchell</manufacturer>
     <players>2</players>
-    <rbf>jtosman</rbf>
+    <rbf>Deco156Simple</rbf>
     <joystick>8</joystick>
     <region>World</region>
-    <rom index="0" zip="joemacr.zip" md5="None">
+    <rom index="0" zip="prtytime.zip" md5="None">
         <!-- 
   0[0]: jm         Joe & Mac Returns
   0[1]: cr         Chain Reaction
@@ -40,48 +40,40 @@
   0[4]: cn         Charlie Ninja
   0[5]: hv         Heavy Smash -->
         <part>
-            01 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00
             00 00 00 00 00 00 00 00
         </part>
         <!-- maincpu - starts at 0x0 - length 0x100000 (20 bits) -->
         <interleave output="16">
-            <part name="05.u29" crc="74e9a158" map="12"/>
+            <part name="pz_00-0.1e" crc="ec715c87" map="12"/>
         </interleave>
         <part repeat="0x80000"> FF</part>
         <!-- JTFRAME_BA1_START -->
         <!-- tiles - starts at 0x100000 - length 0x200000 (21 bits) -->
-        <part name="01.u8l" crc="4da4a2c1"/>
-        <part name="02.u8h" crc="642c08db"/>
-        <part repeat="0x100000"> FF</part>
+        <part name="mcb-00.9a" crc="c48a4f2b"/>
         <!-- PCM1_START -->
         <!-- JTFRAME_BA2_START -->
         <!-- oki1 - starts at 0x300000 - length 0x80000 (19 bits) -->
-        <part name="mbn04" crc="dcbd4771"/>
+        <part name="pz_01-0.13h" crc="8925bce2"/>
         <part repeat="0x40000"> FF</part>
         <!-- PCM2_START -->
         <!-- oki2 - starts at 0x380000 - length 0x200000 (21 bits) -->
-        <part name="mbn03" crc="70b71a2a"/>
+        <part name="mcb-04.12f" crc="e23d3590"/>
         <!-- JTFRAME_BA3_START -->
-        <!-- sprites - starts at 0x580000 - length 0x100000 (20 bits) -->
-        <part name="mbn02" crc="aa2230c5"/>
-        <part name="mbn01" crc="a3a37353"/>
-        <!-- Total 0x680000 bytes - 6656 kBytes -->
+        <!-- sprites - starts at 0x580000 - length 0x800000 (23 bits) -->
+        <part name="mcb-05.14h" crc="81540cfb"/>
+        <part name="mcb-03.14d" crc="0aef73af"/>
+        <part name="mcb-02.14a" crc="423cfb38"/>
+        <part name="mcb-01.13a" crc="06f40a57"/>
+        <!-- Total 0xD80000 bytes - 13824 kBytes -->
     </rom>
-    <rom index="2">
-        <part>
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-</part>
+    <rom index="2" zip="prtytime.zip">
+        <part name="eeprom-prtytime.bin" crc="105700da"/>
     </rom>
     <nvram index="2" size="128"/>
+    <!-- Vertical screen. -->
     <rom index="1">
-        <part>00 80</part>
+        <part>01 80</part>
     </rom>
     <buttons names="button 1,button 2,-,Start,Coin,Core credits" default="A,B,Start,Select,-" count="2"/>
 </misterromdescription>

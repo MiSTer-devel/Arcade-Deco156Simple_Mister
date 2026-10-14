@@ -22,16 +22,16 @@
 <misterromdescription>
     <about author="andrea bogazzi" webpage="https://patreon.com/jotego" twitter="@topapate" source="https://jotego/jtcores"/>
     <rotation>horizontal</rotation>
-    <name>Charlie Ninja</name>
-    <setname>charlien</setname>
+    <name>Osman (World)</name>
+    <setname>osman</setname>
     <mameversion>0288</mameversion>
-    <year>1995</year>
+    <year>1996</year>
     <manufacturer>Mitchell</manufacturer>
     <players>2</players>
-    <rbf>jtosman</rbf>
+    <rbf>Deco156Simple</rbf>
     <joystick>8</joystick>
     <region>World</region>
-    <rom index="0" zip="charlien.zip" md5="None">
+    <rom index="0" zip="osman.zip" md5="None">
         <!-- 
   0[0]: jm         Joe & Mac Returns
   0[1]: cr         Chain Reaction
@@ -40,47 +40,39 @@
   0[4]: cn         Charlie Ninja
   0[5]: hv         Heavy Smash -->
         <part>
-            10 00 00 00 00 00 00 00
+            00 00 00 00 00 00 00 00
             00 00 00 00 00 00 00 00
         </part>
         <!-- maincpu - starts at 0x0 - length 0x100000 (20 bits) -->
         <interleave output="16">
-            <part name="nd00-1.1e" crc="f18f4b23" map="12"/>
+            <part name="sa00-0.1e" crc="ec6b3257" map="12"/>
         </interleave>
         <part repeat="0x80000"> FF</part>
         <!-- JTFRAME_BA1_START -->
         <!-- tiles - starts at 0x100000 - length 0x200000 (21 bits) -->
-        <part name="mbr-00.9a" crc="ecf2c7f0"/>
-        <!-- JTFRAME_BA2_START -->
+        <part name="mcf-00.9a" crc="247712dc"/>
         <!-- PCM1_START -->
+        <!-- JTFRAME_BA2_START -->
         <!-- oki1 - starts at 0x300000 - length 0x80000 (19 bits) -->
-        <part name="nd01-0.13h" crc="635a100a"/>
+        <part name="sa01-0.13h" crc="cea8368e"/>
         <part repeat="0x40000"> FF</part>
         <!-- PCM2_START -->
         <!-- oki2 - starts at 0x380000 - length 0x200000 (21 bits) -->
-        <part name="mbr-02.12f" crc="4f67d333"/>
-        <part repeat="0x100000"> FF</part>
+        <part name="mcf-05.12f" crc="f007d376"/>
         <!-- JTFRAME_BA3_START -->
-        <!-- sprites - starts at 0x580000 - length 0x200000 (21 bits) -->
-        <part name="mbr-03.14h" crc="c448a68a"/>
-        <part name="mbr-01.14a" crc="46c90215"/>
-        <!-- Total 0x780000 bytes - 7680 kBytes -->
+        <!-- sprites - starts at 0x580000 - length 0x800000 (23 bits) -->
+        <part name="mcf-04.14h" crc="4fa55577"/>
+        <part name="mcf-03.14d" crc="faf1d51d"/>
+        <part name="mcf-02.14a" crc="21251b33"/>
+        <part name="mcf-01.13a" crc="83881e25"/>
+        <!-- Total 0xD80000 bytes - 13824 kBytes -->
     </rom>
-    <rom index="2">
-        <part>
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
-</part>
+    <rom index="2" zip="osman.zip">
+        <part name="eeprom-osman.bin" crc="509552b2"/>
     </rom>
     <nvram index="2" size="128"/>
     <rom index="1">
         <part>00 80</part>
     </rom>
-    <buttons names="button 1,button 2,-,Start,Coin,Core credits" default="A,B,Start,Select,-" count="2"/>
+    <buttons names="Attack,Jump,Special,Start,Coin,Core credits" default="A,B,X,Start,Select,-" count="3"/>
 </misterromdescription>
