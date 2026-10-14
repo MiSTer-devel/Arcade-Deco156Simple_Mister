@@ -12,23 +12,14 @@ This is a mame derived core compatibile with:
 
 ## Known issues
 
-- Some scene replays differ from MAME at the first video column.
-
-## Video fixes
-
-- Chain Reaction sprite ROM interleave is fixed in the MRA. Replace its MRA
-  and reload the game; this fix needs no RBF rebuild.
-- Heavy Smash priority is fixed in the RTL. Rebuild the RBF to use that fix.
-
-All 15 captured scenes per game replay successfully. Mixer regression tests
-(`tests/colmix/run.sh`) and Quartus analysis/elaboration pass; hardware testing
-of the updated source remains.
+- Mosat of the games are missing 1 px of sprites at the start of the screen
+- Heavy Smash has broken music and is in pre-release folder
 
 ## Thanks
 
 This core was made possible by
 
-Jotego via JTFRAME and its included modules
+Jotego with JTFRAME and its included modules
 Sorg via the mister platform
 Amber23 Arm cpu core by 
 Some patches to the Amber23 core found in @rmonic79 Night Slasher core
