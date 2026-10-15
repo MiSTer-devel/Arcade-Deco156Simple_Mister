@@ -13,6 +13,7 @@ This is a mame derived core compatibile with:
 ## Known issues
 
 - Most of the games are missing 1 px of sprites at the start of the screen
+- Games have generic button names, needs to find the actual ones
 - Heavy Smash has broken music and is in pre-release folder
 - Didn't hook up the analog resize yet
 
