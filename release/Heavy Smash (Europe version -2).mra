@@ -82,5 +82,5 @@ FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
     <rom index="1">
         <part>00 80</part>
     </rom>
-    <buttons names="Shot,Jump,Special,Start,Coin,Core credits" default="A,B,X,Start,Select,-" count="3"/>
+    <buttons names="Shoot &amp; Tackle,Jump,Pass &amp; Shot,Start,Coin,Core credits" default="A,B,X,Start,Select,-" count="3"/>
 </misterromdescription>

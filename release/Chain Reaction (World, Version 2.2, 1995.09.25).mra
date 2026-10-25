@@ -80,5 +80,5 @@
     <rom index="1">
         <part>00 80</part>
     </rom>
-    <buttons names="button 1,button 2,-,Start,Coin,Core credits" default="A,B,Start,Select,-" count="2"/>
+    <buttons names="Pull in the balloons,Shoot out the balloons,-,Start,Coin,Core credits" default="A,B,Start,Select,-" count="2"/>
 </misterromdescription>
