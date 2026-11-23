@@ -32,6 +32,7 @@ parameter PCM2_OFFSET = (`PCM2_START-`JTFRAME_BA2_START)>>1;
 // Audio channels 
 wire signed [13:0] pcm1;
 wire signed [13:0] pcm2;
+wire signed [15:0] ymz_l, ymz_r;
 wire mute;
 // Additional ports
 wire [1:0] mramh_we;
@@ -120,7 +121,7 @@ wire        pass_io;
 // Clock enable signals
 wire cen_arm; 
 wire cen_oki1; 
-wire cen_oki2; 
+wire cen_ymz;
 wire cen_oki2b; 
 wire gfx4_en, gfx8_en, gfx16_en, gfx16b_en, gfx16c_en, ioctl_dwn;
 
@@ -164,14 +165,16 @@ jtosman_game u_game(
     .rst96      ( rst96     ),
     .clk96      ( clk96     ),
     // Audio channels
-    .pcm1     ( pcm1      ),.pcm2     ( pcm2      ),
-    
+    .pcm1           ( pcm1          ),
+    .pcm2           ( pcm2          ),
+    .ymz_l          ( ymz_l         ),
+    .ymz_r          ( ymz_r         ),
     .snd_en         ( snd_en        ),
     .snd_vol        ( snd_vol       ),
-    .cen_arm    ( cen_arm    ), 
-    .cen_oki1    ( cen_oki1    ), 
-    .cen_oki2    ( cen_oki2    ), 
-    .cen_oki2b    ( cen_oki2b    ), 
+    .cen_arm        ( cen_arm       ),
+    .cen_ymz        ( cen_ymz       ),
+    .cen_oki1       ( cen_oki1       ),
+    .cen_oki2b      ( cen_oki2b      ),
 
     .pxl2_cen       ( pxl2_cen      ),
     .pxl_cen        ( pxl_cen       ),
@@ -787,46 +790,24 @@ jtframe_dual_ram16 #(
 
 
 // Clock enable generation
-// 7000000 = 56000000*1/8 Hz from clk
+// 14000000 = 56000000*1/4 Hz from clk
 `ifdef VERILATOR_KEEP_CEN /* verilator tracing_on */ `else /* verilator tracing_off */ `endif
-jtframe_gated_cen #(.W(1),.NUM(1),.DEN(8),.MFREQ(56000)) u_cen0_clk(
+jtframe_gated_cen #(.W(2),.NUM(1),.DEN(4),.MFREQ(56000)) u_cen0_clk(
     .rst    ( rst          ),
     .clk    ( clk ),
     .busy   ( 1'b0    ),
-    .cen    ( { cen_arm } ),
-    .fave   (              ),
-    .fworst (              )
-); /* verilator tracing_off */
-
-// 1000000 = 56000000*1/56 Hz from clk
-`ifdef VERILATOR_KEEP_CEN /* verilator tracing_on */ `else /* verilator tracing_off */ `endif
-jtframe_gated_cen #(.W(1),.NUM(1),.DEN(56),.MFREQ(56000)) u_cen1_clk(
-    .rst    ( rst          ),
-    .clk    ( clk ),
-    .busy   ( 1'b0    ),
-    .cen    ( { cen_oki1 } ),
-    .fave   (              ),
-    .fworst (              )
-); /* verilator tracing_off */
-
-// 1000000 = 56000000*1/56 Hz from clk
-`ifdef VERILATOR_KEEP_CEN /* verilator tracing_on */ `else /* verilator tracing_off */ `endif
-jtframe_gated_cen #(.W(1),.NUM(1),.DEN(56),.MFREQ(56000)) u_cen2_clk(
-    .rst    ( rst          ),
-    .clk    ( clk ),
-    .busy   ( 1'b0    ),
-    .cen    ( { cen_oki2 } ),
+    .cen    ( { cen_arm, cen_ymz } ),
     .fave   (              ),
     .fworst (              )
 ); /* verilator tracing_off */
 
 // 2000000 = 56000000*1/28 Hz from clk
 `ifdef VERILATOR_KEEP_CEN /* verilator tracing_on */ `else /* verilator tracing_off */ `endif
-jtframe_gated_cen #(.W(1),.NUM(1),.DEN(28),.MFREQ(56000)) u_cen3_clk(
+jtframe_gated_cen #(.W(2),.NUM(1),.DEN(28),.MFREQ(56000)) u_cen1_clk(
     .rst    ( rst          ),
     .clk    ( clk ),
     .busy   ( 1'b0    ),
-    .cen    ( { cen_oki2b } ),
+    .cen    ( { cen_oki1, cen_oki2b } ),
     .fave   (              ),
     .fworst (              )
 ); /* verilator tracing_off */
@@ -838,9 +819,10 @@ assign mute=0;
 jtframe_rcmix #(
     .W0(14),
     .W1(14),
+    .W2(16),
     .STEREO0( 0),
     .STEREO1( 0),
-    .STEREO2( 0),
+    .STEREO2( 1),
     .STEREO3( 0),
     .STEREO4( 0),
     .STEREO5( 0),
@@ -850,7 +832,7 @@ jtframe_rcmix #(
     .DCRM3  ( 0),
     .DCRM4  ( 0),
     .DCRM5  ( 0),
-    .STEREO ( 0),
+    .STEREO ( 1),
     // Fractional cen for 192kHz
     .FRACW( 11), .FRACN(3), .FRACM(875)
 ) u_rcmix(
@@ -867,7 +849,7 @@ jtframe_rcmix #(
     .gpole  ( 15'h3F66 ),  // 19894 Hz 
     .ch0    ( pcm1 ),
     .ch1    ( pcm2 ),
-    .ch2    ( 16'd0 ),
+    .ch2    ( {ymz_l,ymz_r} ),
     .ch3    ( 16'd0 ),
     .ch4    ( 16'd0 ),
     .ch5    ( 16'd0 ),
@@ -879,17 +861,17 @@ jtframe_rcmix #(
     .p5     ( 30'h0), 
     .g0     ( 8'h80 ), // 1.00  pcm1
     .g1     ( 8'h2A ), // 0.33  pcm2
-    .g2     ( 8'h00 ), // 0.00 
+    .g2     ( 8'h80 ),
     .g3     ( 8'h00 ), // 0.00 
     .g4     ( 8'h00 ), // 0.00 
     .g5     ( 8'h00 ), // 0.00 
     .gain   ( snd_vol   ),
-    .mixed  ( snd       ),
+    .mixed  ( {snd_left,snd_right} ),
     .peak   ( snd_peak  ),
     .vu     ( snd_vu    )
 );
 `else
-assign snd=0;
+assign {snd_left,snd_right}=0;
 assign snd_vu   = 0;
 assign snd_peak = 0;
 wire ncs;

@@ -6,15 +6,15 @@
     output    [ 1:0]  sram_dsn,
     input             sram_ok,
 `endif
-    input cen_arm, // 7000000 = 56000000*1/8 Hz 
-    input cen_oki1, // 1000000 = 56000000*1/56 Hz 
-    input cen_oki2, // 1000000 = 56000000*1/56 Hz 
-    input cen_oki2b, // 2000000 = 56000000*1/28 Hz 
+    input             cen_arm,
+    input             cen_ymz,
+    input             cen_oki1,
+    input             cen_oki2b,
 
-    // Audio channels
-    
     output signed [13:0] pcm1,
     output signed [13:0] pcm2,
+    output signed [15:0] ymz_l,
+    output signed [15:0] ymz_r,
     // Memory ports
 `ifdef JTFRAME_SDRAM_XL
     input   [23:0]  prog_addr,

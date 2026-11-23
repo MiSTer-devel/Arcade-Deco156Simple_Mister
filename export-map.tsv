@@ -230,3 +230,7 @@ cores/osman/hdl/jtosman_main.v	rtl/osman/jtosman_main.v
 cores/osman/hdl/jtosman_snd.v	rtl/osman/jtosman_snd.v
 cores/osman/hdl/jtosman_video.v	rtl/osman/jtosman_video.v
 cores/osman/syn/osman.qip	rtl/osman/syn/osman.qip
+cores/osman/hdl/jtosman_de156_copro.v	rtl/osman/jtosman_de156_copro.v
+cores/osman/hdl/jtosman_ymz.v	rtl/osman/jtosman_ymz.v
+cores/osman/hdl/ymz280b/jtymz280b.v	rtl/osman/ymz280b/jtymz280b.v
+cores/osman/hdl/ymz280b/jtymz280b_adpcm.v	rtl/osman/ymz280b/jtymz280b_adpcm.v

@@ -15,6 +15,10 @@ set_global_assignment -name VERILOG_FILE rtl/jteeprom/jt9346_16b8b.v
 set_global_assignment -name VERILOG_FILE rtl/osman/jtosman_game.v
 set_global_assignment -name VERILOG_FILE rtl/osman/jtosman_header.v
 set_global_assignment -name VERILOG_FILE rtl/osman/jtosman_main.v
+set_global_assignment -name VERILOG_FILE rtl/osman/jtosman_de156_copro.v
+set_global_assignment -name VERILOG_FILE rtl/osman/jtosman_ymz.v
+set_global_assignment -name VERILOG_FILE rtl/osman/ymz280b/jtymz280b.v
+set_global_assignment -name VERILOG_FILE rtl/osman/ymz280b/jtymz280b_adpcm.v
 set_global_assignment -name VERILOG_FILE rtl/osman/jtosman_eeprom.v
 set_global_assignment -name VERILOG_FILE rtl/osman/jtosman_snd.v
 set_global_assignment -name VERILOG_FILE rtl/osman/jtosman_video.v

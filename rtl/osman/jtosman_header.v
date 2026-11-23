@@ -12,6 +12,7 @@ module jtosman_header(
     output reg       mdp=0,
     output reg       cn=0,
     output reg       hv=0,
+    output reg       wc=0,
     input      [3:0] prog_addr,
     input      [7:0] prog_data
 );
@@ -29,6 +30,8 @@ always @(posedge clk) begin
         cn <= prog_data[4];
     if( header && prog_addr[3:0]==0 && prog_we )
         hv <= prog_data[5];
+    if( header && prog_addr[3:0]==0 && prog_we )
+        wc <= prog_data[6];
 end
 
 endmodule

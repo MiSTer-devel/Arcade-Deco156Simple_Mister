@@ -15,7 +15,7 @@ integer delay_cycles=1;
 integer clocks=0, ticks=0, advances=0, transfers=0, writes=0;
 integer index, lane;
 integer runs=0;
-integer words=50, expected_writes=7;
+integer words=88, expected_writes=7;
 reg [2047:0] program_file;
 wire req=cyc&&stb;
 wire ack=req&&(latency>=delay_cycles);
@@ -26,7 +26,7 @@ a23_core cpu(.i_clk(clk),.i_reset(rst),.i_irq(1'b0),.i_firq(1'b0),
     .i_wb_ack(ack),.i_wb_err(1'b0),.o_wb_tga(tga));
 initial begin
     if (!$value$plusargs("delay=%d",delay_cycles)) delay_cycles=1;
-    if (!$value$plusargs("words=%d",words)) words=50;
+    if (!$value$plusargs("words=%d",words)) words=88;
     if (!$value$plusargs("writes=%d",expected_writes)) expected_writes=7;
     if (!$value$plusargs("rom=%s",program_file)) program_file="program.hex";
     for(index=0;index<256;index=index+1) mem[index]=0;
